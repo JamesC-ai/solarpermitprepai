@@ -1,14 +1,25 @@
 # Project 052: SolarPermitPrepAI
 
-状态：MVP 已实现，待部署、自定义域名和 PayPal 接入
+状态：MVP 已部署，正式域名可访问，Cloudflare validation 收尾中，待接入 PayPal
 
 建议正式站点：
 
 - https://solar.pagecheckai.com
 
+当前可访问站点：
+
+- https://solarpermitprepai.pages.dev
+
 代码仓库：
 
 - https://github.com/JamesC-ai/solarpermitprepai
+
+Cloudflare Pages：
+
+- Project: `solarpermitprepai`
+- Custom domain: `solar.pagecheckai.com`
+- DNS: `solar.pagecheckai.com CNAME solarpermitprepai.pages.dev DNS only`
+- Pages 主域和正式域名均已通过 HTTP 访问验证；Cloudflare Pages validation 如短时间仍显示 pending，使用 Pages 主域兜底。
 
 ## 产品
 
