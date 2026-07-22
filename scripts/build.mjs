@@ -66,6 +66,7 @@ for (const page of seoPages) {
           <li>Quote request language for a human plan-set review.</li>
         </ul>
         <a class="primary" href="/#precheck">Run precheck</a>
+        <p><a href="https://tools.pagecheckai.com">More PageCheckAI tools</a></p>
       </section>
     </main>
   </body>
