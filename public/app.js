@@ -28,6 +28,8 @@ const requiredDocs = [
   "utility bill or meter number",
 ];
 
+const paymentUrl = "https://www.paypal.com/ncp/payment/SSX7PVFVEGTHL";
+
 function textValue(node, fallback = "") {
   return node.value.trim() || fallback;
 }
@@ -122,6 +124,9 @@ ${fields.missingOutput.textContent}
 Requested scope:
 - Intake cleanup and quote for plan-set drafting coordination.
 - Do not treat this request as approval-ready engineering work until a qualified reviewer confirms AHJ, utility, structural, and electrical requirements.
+
+Payment link:
+${paymentUrl}
 
 Contact: ${v.contactEmail || "not provided"}`;
 }

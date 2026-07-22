@@ -206,6 +206,13 @@ button {
   padding: 18px;
 }
 
+.notice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
 .grid {
   display: grid;
   gap: 18px;
@@ -331,5 +338,9 @@ pre {
   .output-head {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .notice-actions {
+    justify-content: flex-start;
   }
 }

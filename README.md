@@ -13,7 +13,7 @@ MVP:
 Commercial path:
 
 - Free precheck.
-- Suggested paid review: `$49 SolarPermitPrepAI Permit Packet Review`.
+- $49 SolarPermitPrepAI Permit Packet Review: https://www.paypal.com/ncp/payment/SSX7PVFVEGTHL
 - Larger CAD plan-set coordination should be quoted manually and handled by qualified drafters, contractors, and licensed engineers where required.
 
 Boundary:

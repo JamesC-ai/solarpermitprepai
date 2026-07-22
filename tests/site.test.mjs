@@ -7,6 +7,7 @@ test("renders SolarPermitPrepAI precheck", async () => {
   assert.match(html, /SolarPermitPrepAI/);
   assert.match(html, /Generate permit precheck/);
   assert.match(html, /Email quote request/);
+  assert.match(html, /https:\/\/www\.paypal\.com\/ncp\/payment\/SSX7PVFVEGTHL/);
   assert.match(html, /not an engineering stamp/);
 });
 
@@ -14,6 +15,7 @@ test("ships browser-local permit generator", async () => {
   const script = await readFile(new URL("../dist/app.js", import.meta.url), "utf8");
   assert.match(script, /function generate/);
   assert.match(script, /SolarPermitPrepAI packet/);
+  assert.match(script, /SSX7PVFVEGTHL/);
   assert.match(script, /not a permit approval/);
   assert.doesNotMatch(script, /fetch\(/);
 });
