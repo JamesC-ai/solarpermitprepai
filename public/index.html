@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SolarPermitPrepAI - residential solar permit packet precheck</title>
+    <meta
+      name="description"
+      content="Prepare a residential PV permit packet intake, missing-document checklist, CAD handoff brief, and quote request without claiming engineering approval."
+    />
+    <meta property="og:title" content="SolarPermitPrepAI" />
+    <meta property="og:description" content="A cautious precheck for residential solar permit packet readiness." />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">SolarPermitPrepAI</p>
+          <h1>Check a residential solar permit packet before quoting plan-set work.</h1>
+          <p>
+            Organize AHJ, roof, equipment, service-panel, and document details into a practical intake summary,
+            missing-item list, and CAD handoff brief.
+          </p>
+          <div class="button-row">
+            <a class="primary" href="#precheck">Run precheck</a>
+            <a class="secondary" href="/support.html">Support</a>
+          </div>
+        </div>
+        <div class="solar-board" aria-label="Residential solar permit packet preview">
+          <div class="roof-card">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <strong>Roof layout</strong>
+          </div>
+          <div class="line-diagram">
+            <span>PV</span>
+            <i></i>
+            <span>INV</span>
+            <i></i>
+            <span>MSP</span>
+          </div>
+          <div class="permit-card">
+            <p>AHJ packet</p>
+            <strong>Site plan, SLD inputs, labels, cut sheets, utility notes.</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="notice-strip" aria-label="Scope limits">
+        <div>
+          <p class="eyebrow">Important boundary</p>
+          <h2>This is intake and quote prep, not an engineering stamp.</h2>
+          <p>Final drawings, structural calculations, electrical design, and PE stamps must be handled by qualified local professionals.</p>
+        </div>
+        <a class="secondary" href="mailto:support@pagecheckai.com?subject=SolarPermitPrepAI%20permit%20packet%20review">
+          Request quote
+        </a>
+      </section>
+
+      <section class="grid" id="precheck">
+        <form class="panel controls" id="permitForm">
+          <label>
+            Contact email
+            <input id="contactEmail" type="email" value="installer@example.com" />
+          </label>
+          <label>
+            Project address
+            <input id="projectAddress" value="123 Solar Way, Fresno, CA" />
+          </label>
+          <label>
+            State
+            <select id="state">
+              <option value="CA">CA</option>
+              <option value="TX">TX</option>
+              <option value="FL">FL</option>
+              <option value="AZ">AZ</option>
+              <option value="NV">NV</option>
+              <option value="Other">Other</option>
+            </select>
+          </label>
+          <label>
+            City / AHJ
+            <input id="ahj" value="City building department" />
+          </label>
+          <label>
+            System size
+            <input id="systemSize" type="number" min="0" step="0.1" value="7.6" />
+          </label>
+          <label>
+            Module count
+            <input id="moduleCount" type="number" min="1" value="19" />
+          </label>
+          <label>
+            Module model
+            <input id="moduleModel" value="REC 400W or equivalent" />
+          </label>
+          <label>
+            Inverter / optimizer
+            <input id="inverterModel" value="Enphase IQ8 microinverters" />
+          </label>
+          <label>
+            Battery
+            <select id="battery">
+              <option value="No battery">No battery</option>
+              <option value="Battery included">Battery included</option>
+              <option value="Unknown">Unknown</option>
+            </select>
+          </label>
+          <label>
+            Main service panel
+            <input id="servicePanel" value="200A main panel, backfed breaker expected" />
+          </label>
+          <label>
+            Roof type
+            <select id="roofType">
+              <option value="comp shingle">Comp shingle</option>
+              <option value="tile">Tile</option>
+              <option value="metal">Metal</option>
+              <option value="flat roof">Flat roof</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </label>
+          <fieldset>
+            <legend>Documents already available</legend>
+            <label><input class="doc-check" type="checkbox" value="site plan" checked /> Site plan</label>
+            <label><input class="doc-check" type="checkbox" value="roof layout" /> Roof layout</label>
+            <label><input class="doc-check" type="checkbox" value="single-line diagram inputs" /> SLD inputs</label>
+            <label><input class="doc-check" type="checkbox" value="module and inverter cut sheets" checked /> Equipment cut sheets</label>
+            <label><input class="doc-check" type="checkbox" value="racking data sheet" /> Racking data sheet</label>
+            <label><input class="doc-check" type="checkbox" value="utility bill or meter number" /> Utility bill / meter</label>
+          </fieldset>
+          <label>
+            Project notes
+            <textarea id="projectNotes" rows="7">Roof photos are ready. Need to confirm setbacks, fire access pathway, panel schedule, and whether the AHJ accepts SolarAPP+.</textarea>
+          </label>
+          <button class="primary" type="submit">Generate permit precheck</button>
+        </form>
+
+        <section class="panel output" aria-live="polite">
+          <div class="output-head">
+            <div>
+              <p class="eyebrow">Generated pack</p>
+              <h2>Permit packet precheck</h2>
+            </div>
+            <div class="button-row">
+              <button id="copyAll" type="button">Copy</button>
+              <button id="emailQuote" type="button">Email quote request</button>
+            </div>
+          </div>
+          <article>
+            <h3>Readiness summary</h3>
+            <pre id="summaryOutput"></pre>
+          </article>
+          <article>
+            <h3>Missing items</h3>
+            <pre id="missingOutput"></pre>
+          </article>
+          <article>
+            <h3>CAD handoff brief</h3>
+            <pre id="handoffOutput"></pre>
+          </article>
+          <article>
+            <h3>Quote email</h3>
+            <pre id="quoteOutput"></pre>
+          </article>
+          <div class="fineprint">
+            <span>Scope: intake aid only. Check AHJ rules, utility rules, licensed contractor requirements, and engineering needs locally.</span>
+            <span><a href="/privacy.html">Privacy</a> <a href="/terms.html">Terms</a> <a href="/support.html">Support</a></span>
+          </div>
+        </section>
+      </section>
+    </main>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
