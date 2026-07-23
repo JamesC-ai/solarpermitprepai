@@ -306,7 +306,7 @@ pre {
 }
 
 .seo-page {
-  max-width: 860px;
+  max-width: 980px;
 }
 
 .seo-page h1 {
@@ -320,13 +320,25 @@ pre {
   padding-left: 20px;
 }
 
+.seo-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.seo-card {
+  display: grid;
+  gap: 10px;
+}
+
 @media (max-width: 860px) {
   .shell {
     padding: 14px;
   }
 
   .hero,
-  .grid {
+  .grid,
+  .seo-grid {
     grid-template-columns: 1fr;
   }
 
