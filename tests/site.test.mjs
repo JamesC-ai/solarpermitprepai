@@ -31,3 +31,15 @@ test("includes policy support and SEO discovery files", async () => {
   assert.match(terms, /not an engineering service/i);
   assert.match(support, /SolarPermitPrepAI support/);
 });
+
+test("builds thick permit SEO pages with professional boundaries", async () => {
+  const precheckPage = await readFile(new URL("../dist/residential-solar-permit-precheck/index.html", import.meta.url), "utf8");
+  const solarAppPage = await readFile(new URL("../dist/solarapp-permit-intake/index.html", import.meta.url), "utf8");
+  assert.match(precheckPage, /Packet quality checklist/);
+  assert.match(precheckPage, /Professional review boundary/);
+  assert.match(precheckPage, /Missing-item triggers/);
+  assert.match(precheckPage, /Quote handoff review/);
+  assert.match(precheckPage, /licensed contractor, electrician, engineer, or permit professional/);
+  assert.match(solarAppPage, /does not determine SolarAPP\+ eligibility/);
+  assert.match(solarAppPage, /Project scope unclear enough to need manual screening/);
+});
