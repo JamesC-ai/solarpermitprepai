@@ -12,6 +12,10 @@ test("renders SolarPermitPrepAI precheck", async () => {
   assert.match(html, /Permit prep guides/);
   assert.match(html, /Panel photos/);
   assert.match(html, /Installer handoff/);
+  assert.match(html, /Application/);
+  assert.match(html, /Corrections/);
+  assert.match(html, /Structural intake/);
+  assert.match(html, /Version control/);
 });
 
 test("ships browser-local permit generator", async () => {
@@ -43,6 +47,16 @@ test("includes policy support and SEO discovery files", async () => {
   assert.match(sitemap, /solar-site-survey-packet/);
   assert.match(sitemap, /solar-fire-setback-checklist/);
   assert.match(sitemap, /solar-installer-handoff-checklist/);
+  assert.match(sitemap, /solar-permit-application-checklist/);
+  assert.match(sitemap, /solar-permit-correction-response-letter/);
+  assert.match(sitemap, /solar-structural-review-intake-checklist/);
+  assert.match(sitemap, /solar-racking-mounting-cut-sheet-checklist/);
+  assert.match(sitemap, /solar-rapid-shutdown-documentation-checklist/);
+  assert.match(sitemap, /solar-placard-label-schedule-checklist/);
+  assert.match(sitemap, /solar-interconnection-application-handoff/);
+  assert.match(sitemap, /solar-load-calculation-intake-checklist/);
+  assert.match(sitemap, /solar-plan-set-version-control-checklist/);
+  assert.equal((sitemap.match(/<loc>/g) || []).length, 29);
   assert.match(terms, /not an engineering service/i);
   assert.match(support, /SolarPermitPrepAI support/);
   assert.equal(indexNowKey.trim(), "cf398b202197d60941bf17f97fffe12b");
@@ -70,4 +84,16 @@ test("builds new solar intake SEO pages with boundaries", async () => {
   assert.match(firePage, /Fire setback and access pathway requirements are local/i);
   assert.match(firePage, /does not interpret fire code/i);
   assert.match(handoffPage, /not a final design, permit packet, or construction authorization/i);
+});
+
+test("builds application, structural, electrical, and revision handoff pages safely", async () => {
+  const applicationPage = await readFile(new URL("../dist/solar-permit-application-checklist/index.html", import.meta.url), "utf8");
+  const structuralPage = await readFile(new URL("../dist/solar-structural-review-intake-checklist/index.html", import.meta.url), "utf8");
+  const loadPage = await readFile(new URL("../dist/solar-load-calculation-intake-checklist/index.html", import.meta.url), "utf8");
+  const correctionPage = await readFile(new URL("../dist/solar-permit-correction-response-letter/index.html", import.meta.url), "utf8");
+  assert.match(applicationPage, /does not complete official forms, pay fees, sign applications, or guarantee acceptance/i);
+  assert.match(structuralPage, /does not calculate loads, verify spans, design attachments, or provide structural approval/i);
+  assert.match(loadPage, /does not perform load calculations, service sizing, breaker sizing, conductor sizing, or compliance review/i);
+  assert.match(correctionPage, /does not interpret code or decide the technical response/i);
+  assert.match(correctionPage, /https:\/\/www\.paypal\.com\/ncp\/payment\/SSX7PVFVEGTHL/);
 });

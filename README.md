@@ -9,6 +9,7 @@ MVP:
 - CAD / reviewer handoff brief.
 - Quote request email.
 - Privacy, terms, support, sitemap, robots, and SEO pages.
+- 25 generated SEO pages covering intake, correction, structural, electrical-document, utility-handoff, and version-control searches.
 
 Commercial path:
 
