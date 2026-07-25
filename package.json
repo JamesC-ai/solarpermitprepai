@@ -7,7 +7,8 @@
     "build": "node scripts/build.mjs",
     "dev": "npx wrangler pages dev dist --compatibility-date=2026-05-22",
     "test": "npm run build && node --test tests/site.test.mjs",
-    "deploy": "npm run build && npx wrangler pages deploy dist --project-name solarpermitprepai --commit-dirty=true"
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name solarpermitprepai --commit-dirty=true",
+    "submit:indexnow": "npm run build && node scripts/submit-indexnow.mjs"
   },
   "devDependencies": {
     "wrangler": "4.113.0"

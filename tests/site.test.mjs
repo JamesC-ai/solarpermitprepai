@@ -9,6 +9,9 @@ test("renders SolarPermitPrepAI precheck", async () => {
   assert.match(html, /Email quote request/);
   assert.match(html, /https:\/\/www\.paypal\.com\/ncp\/payment\/SSX7PVFVEGTHL/);
   assert.match(html, /not an engineering stamp/);
+  assert.match(html, /Permit prep guides/);
+  assert.match(html, /Panel photos/);
+  assert.match(html, /Installer handoff/);
 });
 
 test("ships browser-local permit generator", async () => {
@@ -25,11 +28,25 @@ test("includes policy support and SEO discovery files", async () => {
   const sitemap = await readFile(new URL("../dist/sitemap.xml", import.meta.url), "utf8");
   const terms = await readFile(new URL("../dist/terms.html", import.meta.url), "utf8");
   const support = await readFile(new URL("../dist/support.html", import.meta.url), "utf8");
+  const indexNowKey = await readFile(new URL("../dist/cf398b202197d60941bf17f97fffe12b.txt", import.meta.url), "utf8");
+  const indexNowScript = await readFile(new URL("../scripts/submit-indexnow.mjs", import.meta.url), "utf8");
   assert.match(robots, /Sitemap: https:\/\/solar\.pagecheckai\.com\/sitemap\.xml/);
   assert.match(sitemap, /residential-solar-permit-precheck/);
   assert.match(sitemap, /solarapp-permit-intake/);
+  assert.match(sitemap, /solar-roof-layout-permit-checklist/);
+  assert.match(sitemap, /solar-utility-bill-meter-checklist/);
+  assert.match(sitemap, /main-service-panel-photo-checklist/);
+  assert.match(sitemap, /solar-battery-backup-permit-intake/);
+  assert.match(sitemap, /solar-service-upgrade-permit-notes/);
+  assert.match(sitemap, /solar-permit-revision-checklist/);
+  assert.match(sitemap, /solar-equipment-cut-sheet-checklist/);
+  assert.match(sitemap, /solar-site-survey-packet/);
+  assert.match(sitemap, /solar-fire-setback-checklist/);
+  assert.match(sitemap, /solar-installer-handoff-checklist/);
   assert.match(terms, /not an engineering service/i);
   assert.match(support, /SolarPermitPrepAI support/);
+  assert.equal(indexNowKey.trim(), "cf398b202197d60941bf17f97fffe12b");
+  assert.match(indexNowScript, /api\.indexnow\.org\/indexnow/);
 });
 
 test("builds thick permit SEO pages with professional boundaries", async () => {
@@ -42,4 +59,15 @@ test("builds thick permit SEO pages with professional boundaries", async () => {
   assert.match(precheckPage, /licensed contractor, electrician, engineer, or permit professional/);
   assert.match(solarAppPage, /does not determine SolarAPP\+ eligibility/);
   assert.match(solarAppPage, /Project scope unclear enough to need manual screening/);
+});
+
+test("builds new solar intake SEO pages with boundaries", async () => {
+  const panelPage = await readFile(new URL("../dist/main-service-panel-photo-checklist/index.html", import.meta.url), "utf8");
+  const firePage = await readFile(new URL("../dist/solar-fire-setback-checklist/index.html", import.meta.url), "utf8");
+  const handoffPage = await readFile(new URL("../dist/solar-installer-handoff-checklist/index.html", import.meta.url), "utf8");
+  assert.match(panelPage, /Electrical service ratings, breaker sizing, busbar limits/i);
+  assert.match(panelPage, /does not calculate electrical compliance/i);
+  assert.match(firePage, /Fire setback and access pathway requirements are local/i);
+  assert.match(firePage, /does not interpret fire code/i);
+  assert.match(handoffPage, /not a final design, permit packet, or construction authorization/i);
 });
