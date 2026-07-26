@@ -16,6 +16,10 @@ test("renders SolarPermitPrepAI precheck", async () => {
   assert.match(html, /Corrections/);
   assert.match(html, /Structural intake/);
   assert.match(html, /Version control/);
+  assert.match(html, /Rejection checklist/);
+  assert.match(html, /EV charger notes/);
+  assert.match(html, /HOA packet/);
+  assert.match(html, /Inspection ready/);
 });
 
 test("ships browser-local permit generator", async () => {
@@ -56,11 +60,40 @@ test("includes policy support and SEO discovery files", async () => {
   assert.match(sitemap, /solar-interconnection-application-handoff/);
   assert.match(sitemap, /solar-load-calculation-intake-checklist/);
   assert.match(sitemap, /solar-plan-set-version-control-checklist/);
-  assert.equal((sitemap.match(/<loc>/g) || []).length, 29);
+  for (const route of [
+    "solar-permit-rejection-checklist",
+    "solar-ev-charger-ready-panel-notes",
+    "solar-meter-main-combo-photo-checklist",
+    "solar-detached-garage-pv-permit-notes",
+    "solar-hoa-approval-packet-checklist",
+    "solar-fire-department-review-handoff",
+    "solar-as-built-plan-set-intake-checklist",
+    "solar-inspection-ready-packet-checklist",
+    "solar-permit-portal-upload-checklist",
+    "solar-equipment-substitution-permit-notes",
+  ]) {
+    assert.match(sitemap, new RegExp(route));
+  }
+  assert.equal((sitemap.match(/<loc>/g) || []).length, 39);
   assert.match(terms, /not an engineering service/i);
   assert.match(support, /SolarPermitPrepAI support/);
   assert.equal(indexNowKey.trim(), "cf398b202197d60941bf17f97fffe12b");
   assert.match(indexNowScript, /api\.indexnow\.org\/indexnow/);
+});
+
+test("builds rejection, HOA, portal, and inspection pages with boundaries", async () => {
+  const rejectionPage = await readFile(new URL("../dist/solar-permit-rejection-checklist/index.html", import.meta.url), "utf8");
+  const hoaPage = await readFile(new URL("../dist/solar-hoa-approval-packet-checklist/index.html", import.meta.url), "utf8");
+  const portalPage = await readFile(new URL("../dist/solar-permit-portal-upload-checklist/index.html", import.meta.url), "utf8");
+  const inspectionPage = await readFile(new URL("../dist/solar-inspection-ready-packet-checklist/index.html", import.meta.url), "utf8");
+  assert.match(rejectionPage, /does not decide the technical answer to a permit rejection/i);
+  assert.match(rejectionPage, /qualified review/i);
+  assert.match(hoaPage, /does not provide HOA legal advice/i);
+  assert.match(hoaPage, /HOA, AHJ, utility, and inspection milestones/i);
+  assert.match(portalPage, /does not log into permit portals, pay fees, sign forms, or submit applications/i);
+  assert.match(portalPage, /Keep portal credentials out of generated notes/i);
+  assert.match(inspectionPage, /does not determine inspection readiness or guarantee inspection approval/i);
+  assert.match(inspectionPage, /https:\/\/www\.paypal\.com\/ncp\/payment\/SSX7PVFVEGTHL/);
 });
 
 test("builds thick permit SEO pages with professional boundaries", async () => {
