@@ -20,6 +20,10 @@ test("renders SolarPermitPrepAI precheck", async () => {
   assert.match(html, /EV charger notes/);
   assert.match(html, /HOA packet/);
   assert.match(html, /Inspection ready/);
+  assert.match(html, /Battery spec sheets/);
+  assert.match(html, /Utility documents/);
+  assert.match(html, /Homeowner quote/);
+  assert.match(html, /Permit renewal/);
 });
 
 test("ships browser-local permit generator", async () => {
@@ -71,10 +75,20 @@ test("includes policy support and SEO discovery files", async () => {
     "solar-inspection-ready-packet-checklist",
     "solar-permit-portal-upload-checklist",
     "solar-equipment-substitution-permit-notes",
+    "solar-battery-spec-sheet-handoff",
+    "solar-inverter-cut-sheet-checklist",
+    "solar-pv-module-data-sheet-checklist",
+    "solar-ground-mount-permit-intake",
+    "solar-carport-pv-permit-notes",
+    "solar-roof-replacement-pv-coordination",
+    "solar-utility-interconnection-document-checklist",
+    "solar-homeowner-permit-quote-checklist",
+    "solar-permit-expiration-renewal-notes",
+    "solar-field-change-handoff-checklist",
   ]) {
     assert.match(sitemap, new RegExp(route));
   }
-  assert.equal((sitemap.match(/<loc>/g) || []).length, 39);
+  assert.equal((sitemap.match(/<loc>/g) || []).length, 49);
   assert.match(terms, /not an engineering service/i);
   assert.match(support, /SolarPermitPrepAI support/);
   assert.equal(indexNowKey.trim(), "cf398b202197d60941bf17f97fffe12b");
@@ -129,4 +143,27 @@ test("builds application, structural, electrical, and revision handoff pages saf
   assert.match(loadPage, /does not perform load calculations, service sizing, breaker sizing, conductor sizing, or compliance review/i);
   assert.match(correctionPage, /does not interpret code or decide the technical response/i);
   assert.match(correctionPage, /https:\/\/www\.paypal\.com\/ncp\/payment\/SSX7PVFVEGTHL/);
+});
+
+test("builds equipment, site, utility, and lifecycle pages with boundaries", async () => {
+  const batteryPage = await readFile(new URL("../dist/solar-battery-spec-sheet-handoff/index.html", import.meta.url), "utf8");
+  const inverterPage = await readFile(new URL("../dist/solar-inverter-cut-sheet-checklist/index.html", import.meta.url), "utf8");
+  const groundMountPage = await readFile(new URL("../dist/solar-ground-mount-permit-intake/index.html", import.meta.url), "utf8");
+  const roofPage = await readFile(new URL("../dist/solar-roof-replacement-pv-coordination/index.html", import.meta.url), "utf8");
+  const utilityPage = await readFile(new URL("../dist/solar-utility-interconnection-document-checklist/index.html", import.meta.url), "utf8");
+  const quotePage = await readFile(new URL("../dist/solar-homeowner-permit-quote-checklist/index.html", import.meta.url), "utf8");
+  const renewalPage = await readFile(new URL("../dist/solar-permit-expiration-renewal-notes/index.html", import.meta.url), "utf8");
+  const fieldChangePage = await readFile(new URL("../dist/solar-field-change-handoff-checklist/index.html", import.meta.url), "utf8");
+  assert.match(batteryPage, /does not approve battery design or code compliance/i);
+  assert.match(inverterPage, /does not select, size, approve, or verify inverter compatibility/i);
+  assert.match(groundMountPage, /does not design foundations, verify soil, interpret zoning/i);
+  assert.match(roofPage, /does not design roof work, approve removal methods/i);
+  assert.match(utilityPage, /does not submit utility applications, interpret tariffs/i);
+  assert.match(quotePage, /does not provide a binding quote, engineering design/i);
+  assert.match(renewalPage, /does not interpret AHJ renewal rules, extend permits/i);
+  assert.match(fieldChangePage, /does not validate as-built accuracy, approve construction changes/i);
+  for (const page of [batteryPage, inverterPage, groundMountPage, roofPage, utilityPage, quotePage, renewalPage, fieldChangePage]) {
+    assert.match(page, /https:\/\/www\.paypal\.com\/ncp\/payment\/SSX7PVFVEGTHL/);
+    assert.match(page, /Professional review boundary/);
+  }
 });
