@@ -9,7 +9,7 @@ MVP:
 - CAD / reviewer handoff brief.
 - Quote request email.
 - Privacy, terms, support, sitemap, robots, and SEO pages.
-- 45 generated SEO pages covering intake, correction, structural, electrical-document, utility-handoff, version-control, rejection, HOA, portal-upload, inspection, equipment-substitution, battery and equipment-document, ground-mount, carport, roof-replacement, homeowner-quote, permit-renewal, and field-change searches.
+- 55 generated SEO pages covering intake, correction, structural, electrical-document, utility-handoff, version-control, rejection, HOA, portal-upload, inspection, equipment-substitution, battery and equipment-document, ground-mount, carport, roof-replacement, homeowner-quote, permit-renewal, field-change, site-constraint, generator, obstruction, breaker-space, inspection-correction, and PTO searches.
 
 Commercial path:
 
@@ -17,7 +17,7 @@ Commercial path:
 - $49 SolarPermitPrepAI Permit Packet Review: https://www.paypal.com/ncp/payment/SSX7PVFVEGTHL
 - Larger CAD plan-set coordination should be quoted manually and handled by qualified drafters, contractors, and licensed engineers where required.
 
-New high-intent guides include battery and inverter documentation, PV module data sheets, ground-mount and carport intake, roof-replacement coordination, utility interconnection documents, homeowner quote preparation, permit renewal, and field-change handoff.
+New high-intent guides include battery and inverter documentation, PV module data sheets, ground-mount and carport intake, roof-replacement coordination, utility interconnection documents, homeowner quote preparation, permit renewal, field-change handoff, pool-equipment clearance notes, generator interlock context, roof obstruction notes, breaker-space photos, inspection correction notes, and permission-to-operate handoff.
 
 Boundary:
 

@@ -24,6 +24,12 @@ test("renders SolarPermitPrepAI precheck", async () => {
   assert.match(html, /Utility documents/);
   assert.match(html, /Homeowner quote/);
   assert.match(html, /Permit renewal/);
+  assert.match(html, /Pool equipment/);
+  assert.match(html, /Generator interlock/);
+  assert.match(html, /Roof obstructions/);
+  assert.match(html, /Breaker space/);
+  assert.match(html, /Inspection correction/);
+  assert.match(html, /PTO handoff/);
 });
 
 test("ships browser-local permit generator", async () => {
@@ -85,10 +91,20 @@ test("includes policy support and SEO discovery files", async () => {
     "solar-homeowner-permit-quote-checklist",
     "solar-permit-expiration-renewal-notes",
     "solar-field-change-handoff-checklist",
+    "solar-pool-equipment-clearance-notes",
+    "solar-generator-interlock-permit-notes",
+    "solar-skylight-vent-obstruction-checklist",
+    "solar-attic-access-photo-checklist",
+    "solar-tile-roof-hook-cut-sheet-checklist",
+    "solar-flat-roof-ballast-permit-intake",
+    "solar-breaker-space-photo-checklist",
+    "solar-monitoring-gateway-permit-notes",
+    "solar-inspection-correction-note-checklist",
+    "solar-permission-to-operate-handoff",
   ]) {
     assert.match(sitemap, new RegExp(route));
   }
-  assert.equal((sitemap.match(/<loc>/g) || []).length, 49);
+  assert.equal((sitemap.match(/<loc>/g) || []).length, 59);
   assert.match(terms, /not an engineering service/i);
   assert.match(support, /SolarPermitPrepAI support/);
   assert.equal(indexNowKey.trim(), "cf398b202197d60941bf17f97fffe12b");
@@ -166,4 +182,28 @@ test("builds equipment, site, utility, and lifecycle pages with boundaries", asy
     assert.match(page, /https:\/\/www\.paypal\.com\/ncp\/payment\/SSX7PVFVEGTHL/);
     assert.match(page, /Professional review boundary/);
   }
+});
+
+test("builds new site-constraint, inspection, and PTO pages with boundaries", async () => {
+  const poolPage = await readFile(new URL("../dist/solar-pool-equipment-clearance-notes/index.html", import.meta.url), "utf8");
+  const generatorPage = await readFile(
+    new URL("../dist/solar-generator-interlock-permit-notes/index.html", import.meta.url),
+    "utf8",
+  );
+  const obstructionPage = await readFile(
+    new URL("../dist/solar-skylight-vent-obstruction-checklist/index.html", import.meta.url),
+    "utf8",
+  );
+  const breakerPage = await readFile(new URL("../dist/solar-breaker-space-photo-checklist/index.html", import.meta.url), "utf8");
+  const correctionPage = await readFile(
+    new URL("../dist/solar-inspection-correction-note-checklist/index.html", import.meta.url),
+    "utf8",
+  );
+  const ptoPage = await readFile(new URL("../dist/solar-permission-to-operate-handoff/index.html", import.meta.url), "utf8");
+  assert.match(poolPage, /does not determine equipment clearance, code compliance, or inspection acceptance/i);
+  assert.match(generatorPage, /does not approve generator interlocks/i);
+  assert.match(obstructionPage, /does not determine final array layout/i);
+  assert.match(breakerPage, /does not determine breaker capacity/i);
+  assert.match(correctionPage, /does not interpret code, approve fixes, or guarantee reinspection approval/i);
+  assert.match(ptoPage, /does not submit utility documents, grant permission to operate/i);
 });
