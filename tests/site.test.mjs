@@ -101,10 +101,20 @@ test("includes policy support and SEO discovery files", async () => {
     "solar-monitoring-gateway-permit-notes",
     "solar-inspection-correction-note-checklist",
     "solar-permission-to-operate-handoff",
+    "solar-property-address-parcel-intake-checklist",
+    "solar-roof-material-condition-photo-notes",
+    "solar-equipment-nameplate-photo-checklist",
+    "solar-site-plan-dimension-source-checklist",
+    "solar-conduit-trench-route-photo-log",
+    "solar-permit-fee-payment-handoff-checklist",
+    "solar-revision-cover-sheet-checklist",
+    "solar-contractor-license-document-handoff",
+    "solar-plan-review-comment-tracker",
+    "solar-final-document-owner-handoff",
   ]) {
     assert.match(sitemap, new RegExp(route));
   }
-  assert.equal((sitemap.match(/<loc>/g) || []).length, 59);
+  assert.equal((sitemap.match(/<loc>/g) || []).length, 69);
   assert.match(terms, /not an engineering service/i);
   assert.match(support, /SolarPermitPrepAI support/);
   assert.equal(indexNowKey.trim(), "cf398b202197d60941bf17f97fffe12b");
@@ -206,4 +216,19 @@ test("builds new site-constraint, inspection, and PTO pages with boundaries", as
   assert.match(breakerPage, /does not determine breaker capacity/i);
   assert.match(correctionPage, /does not interpret code, approve fixes, or guarantee reinspection approval/i);
   assert.match(ptoPage, /does not submit utility documents, grant permission to operate/i);
+});
+
+test("builds property, payment, revision, review, and closeout pages safely", async () => {
+  const parcelPage = await readFile(new URL("../dist/solar-property-address-parcel-intake-checklist/index.html", import.meta.url), "utf8");
+  const roofPage = await readFile(new URL("../dist/solar-roof-material-condition-photo-notes/index.html", import.meta.url), "utf8");
+  const feePage = await readFile(new URL("../dist/solar-permit-fee-payment-handoff-checklist/index.html", import.meta.url), "utf8");
+  const licensePage = await readFile(new URL("../dist/solar-contractor-license-document-handoff/index.html", import.meta.url), "utf8");
+  const commentPage = await readFile(new URL("../dist/solar-plan-review-comment-tracker/index.html", import.meta.url), "utf8");
+  const finalPage = await readFile(new URL("../dist/solar-final-document-owner-handoff/index.html", import.meta.url), "utf8");
+  assert.match(parcelPage, /does not verify ownership, parcel boundaries, zoning, jurisdiction/i);
+  assert.match(roofPage, /does not assess roof condition, remaining life, structural capacity/i);
+  assert.match(feePage, /does not calculate fees, access portals, make payments, issue refunds/i);
+  assert.match(licensePage, /does not verify licensure, insurance coverage, identity, standing/i);
+  assert.match(commentPage, /does not interpret code, answer technical comments/i);
+  assert.match(finalPage, /does not confirm project completion, approval, warranty coverage/i);
 });
