@@ -111,10 +111,20 @@ test("includes policy support and SEO discovery files", async () => {
     "solar-contractor-license-document-handoff",
     "solar-plan-review-comment-tracker",
     "solar-final-document-owner-handoff",
+    "solar-ahj-contact-record-checklist",
+    "solar-approved-plan-storage-handoff",
+    "solar-inspection-appointment-handoff",
+    "solar-neighbor-notice-document-checklist",
+    "solar-utility-bill-name-match-checklist",
+    "solar-permit-email-thread-index",
+    "solar-manufacturer-warranty-document-handoff",
+    "solar-change-order-permit-impact-notes",
+    "solar-roof-access-pathway-photo-log",
+    "solar-closeout-support-contact-sheet",
   ]) {
     assert.match(sitemap, new RegExp(route));
   }
-  assert.equal((sitemap.match(/<loc>/g) || []).length, 69);
+  assert.equal((sitemap.match(/<loc>/g) || []).length, 79);
   assert.match(terms, /not an engineering service/i);
   assert.match(support, /SolarPermitPrepAI support/);
   assert.equal(indexNowKey.trim(), "cf398b202197d60941bf17f97fffe12b");
@@ -231,4 +241,34 @@ test("builds property, payment, revision, review, and closeout pages safely", as
   assert.match(licensePage, /does not verify licensure, insurance coverage, identity, standing/i);
   assert.match(commentPage, /does not interpret code, answer technical comments/i);
   assert.match(finalPage, /does not confirm project completion, approval, warranty coverage/i);
+});
+
+test("builds administrative handoff, warranty, and closeout pages safely", async () => {
+  const ahjPage = await readFile(new URL("../dist/solar-ahj-contact-record-checklist/index.html", import.meta.url), "utf8");
+  const inspectionPage = await readFile(
+    new URL("../dist/solar-inspection-appointment-handoff/index.html", import.meta.url),
+    "utf8",
+  );
+  const utilityPage = await readFile(
+    new URL("../dist/solar-utility-bill-name-match-checklist/index.html", import.meta.url),
+    "utf8",
+  );
+  const warrantyPage = await readFile(
+    new URL("../dist/solar-manufacturer-warranty-document-handoff/index.html", import.meta.url),
+    "utf8",
+  );
+  const changePage = await readFile(
+    new URL("../dist/solar-change-order-permit-impact-notes/index.html", import.meta.url),
+    "utf8",
+  );
+  const closeoutPage = await readFile(
+    new URL("../dist/solar-closeout-support-contact-sheet/index.html", import.meta.url),
+    "utf8",
+  );
+  assert.match(ahjPage, /does not interpret AHJ policy, provide code advice, submit requests/i);
+  assert.match(inspectionPage, /does not schedule inspections, access portals, determine readiness/i);
+  assert.match(utilityPage, /does not access utility accounts, change account names, verify identity/i);
+  assert.match(warrantyPage, /does not verify warranty coverage, register products, file claims/i);
+  assert.match(changePage, /does not determine permit impact, approve change orders, revise designs/i);
+  assert.match(closeoutPage, /does not provide warranty, performance, utility, emergency, legal, or repair advice/i);
 });
