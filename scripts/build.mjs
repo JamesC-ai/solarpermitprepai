@@ -4,7 +4,8 @@ const root = new URL("../", import.meta.url);
 const publicDir = new URL("public/", root);
 const distDir = new URL("dist/", root);
 const site = "https://solar.pagecheckai.com";
-const reviewUrl = "https://www.paypal.com/ncp/payment/SSX7PVFVEGTHL";
+const reviewUrl = "https://namebatch.pagecheckai.com/api/checkout?v=solarpermit-20260731&product=solarpermitprepai";
+const fallbackReviewUrl = "https://www.paypal.com/ncp/payment/SSX7PVFVEGTHL";
 
 const seoPages = [
   {
@@ -1507,6 +1508,7 @@ for (const page of seoPages) {
       <div class="button-row">
         <a class="primary" href="/#precheck">Run precheck</a>
         <a class="secondary" href="${reviewUrl}">Request $49 review</a>
+        <a class="secondary" href="${fallbackReviewUrl}">PayPal fallback</a>
       </div>
       <section class="seo-grid" aria-label="SolarPermitPrepAI page details">
         <article class="panel seo-card">
