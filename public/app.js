@@ -1,8 +1,10 @@
 const fields = {
   ahj: document.querySelector("#ahj"),
+  activatePack: document.querySelector("#activatePack"),
   battery: document.querySelector("#battery"),
   contactEmail: document.querySelector("#contactEmail"),
   copyAll: document.querySelector("#copyAll"),
+  downloadPack: document.querySelector("#downloadPack"),
   emailQuote: document.querySelector("#emailQuote"),
   handoffOutput: document.querySelector("#handoffOutput"),
   inverterModel: document.querySelector("#inverterModel"),
@@ -11,6 +13,8 @@ const fields = {
   moduleModel: document.querySelector("#moduleModel"),
   projectAddress: document.querySelector("#projectAddress"),
   projectNotes: document.querySelector("#projectNotes"),
+  proCode: document.querySelector("#proCode"),
+  proStatus: document.querySelector("#proStatus"),
   quoteOutput: document.querySelector("#quoteOutput"),
   roofType: document.querySelector("#roofType"),
   servicePanel: document.querySelector("#servicePanel"),
@@ -18,6 +22,10 @@ const fields = {
   summaryOutput: document.querySelector("#summaryOutput"),
   systemSize: document.querySelector("#systemSize"),
 };
+
+const LICENSE_VERIFY_URL = "https://namebatch.pagecheckai.com/api/licenses/verify";
+const LICENSE_STORAGE_KEY = "solarpermitprepai.packet-prep-code";
+let paidPackActive = false;
 
 const requiredDocs = [
   "site plan",
@@ -28,7 +36,7 @@ const requiredDocs = [
   "utility bill or meter number",
 ];
 
-const paymentUrl = "https://www.paypal.com/ncp/payment/SSX7PVFVEGTHL";
+const paymentUrl = "https://namebatch.pagecheckai.com/api/checkout?v=solarpermit-20260731&product=solarpermitprepai";
 
 function textValue(node, fallback = "") {
   return node.value.trim() || fallback;
@@ -147,6 +155,93 @@ Quote email:
 ${fields.quoteOutput.textContent}`;
 }
 
+function paidPacketText() {
+  const v = values();
+  return `SolarPermitPrepAI Paid Permit Packet Handoff
+
+Generated locally from the current browser precheck. Review every project fact, field measurement, equipment model, document, AHJ note, utility requirement, and professional decision before sharing.
+
+${packetText()}
+
+Paid handoff checklist:
+1. Confirm the project address, AHJ, state, utility, site plan, roof layout, service-panel details, equipment models, and battery scope from the responsible project owner.
+2. Keep roof photos, utility bills, permit records, engineering documents, credentials, and homeowner information in a private project folder.
+3. Mark assumptions separately from verified field facts. Do not fill unknown values with guesses.
+4. Route structural, electrical, fire-access, rapid-shutdown, equipment, utility, and local-code questions to the qualified professional responsible for the project.
+5. Do not treat this file as a stamped plan set, official application, permit approval, utility approval, inspection approval, or construction authorization.
+6. Record which documents are owned by the homeowner, installer, drafter, engineer, AHJ, utility, or other responsible party.
+7. Keep permit portal login, payment, signature, submission, inspection scheduling, and account changes outside this tool.
+
+Document and review tracker:
+Item | Owner | Private location | Reviewer | Status | Last checked | Next authorized step
+Site plan | _____ | _____ | _____ | ${v.docs.includes("site plan") ? "available" : "missing"} | _____ | _____
+Roof layout | _____ | _____ | _____ | ${v.docs.includes("roof layout") ? "available" : "missing"} | _____ | _____
+SLD inputs | _____ | _____ | _____ | ${v.docs.includes("single-line diagram inputs") ? "available" : "missing"} | _____ | _____
+Equipment cut sheets | _____ | _____ | _____ | ${v.docs.includes("module and inverter cut sheets") ? "available" : "missing"} | _____ | _____
+Racking data | _____ | _____ | _____ | ${v.docs.includes("racking data sheet") ? "available" : "missing"} | _____ | _____
+Utility or meter record | _____ | _____ | _____ | ${v.docs.includes("utility bill or meter number") ? "available" : "missing"} | _____ | _____
+Professional review | _____ | _____ | _____ | pending | _____ | _____
+AHJ submission | _____ | _____ | _____ | not performed by this tool | _____ | _____
+
+Operating boundary:
+SolarPermitPrepAI organizes intake and quote-prep notes. It does not log into permit portals, submit applications, pay fees, sign forms, calculate electrical or structural compliance, interpret AHJ rules, verify licensure, certify inspection readiness, or guarantee permit approval, utility approval, safety, schedule, quote, payment, ranking, traffic, sales, or revenue.`;
+}
+
+function setPaidPackState(active, message) {
+  paidPackActive = active;
+  fields.downloadPack.disabled = !active;
+  fields.proStatus.textContent = message;
+}
+
+async function verifyPaidPackCode(rawCode, { quiet = false } = {}) {
+  const code = rawCode.trim().toUpperCase();
+  if (!/^SP-[A-F0-9]{4}(?:-[A-F0-9]{4}){3}$/.test(code)) {
+    setPaidPackState(false, quiet ? "Enter your paid handoff code." : "That activation code format is not valid.");
+    return false;
+  }
+  fields.activatePack.disabled = true;
+  if (!quiet) setPaidPackState(false, "Checking activation code...");
+  try {
+    const response = await fetch(LICENSE_VERIFY_URL, {
+      body: JSON.stringify({ code, product: "solarpermitprepai" }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || result.valid !== true || result.entitlement !== "permit_packet_prep_pack") {
+      localStorage.removeItem(LICENSE_STORAGE_KEY);
+      setPaidPackState(false, "The code could not be verified. Check it or contact support.");
+      return false;
+    }
+    localStorage.setItem(LICENSE_STORAGE_KEY, code);
+    fields.proCode.value = code;
+    setPaidPackState(true, "Paid permit packet handoff unlocked on this browser.");
+    return true;
+  } catch {
+    setPaidPackState(false, "Activation is temporarily unavailable. Your project notes remain on this device.");
+    return false;
+  } finally {
+    fields.activatePack.disabled = false;
+  }
+}
+
+function downloadPaidPack() {
+  if (!paidPackActive) {
+    setPaidPackState(false, "Activate the paid handoff before downloading.");
+    fields.proCode.focus();
+    return;
+  }
+  const blob = new Blob([paidPacketText()], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "solarpermitprepai-permit-packet-handoff.txt";
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 async function copyAll() {
   await navigator.clipboard.writeText(packetText());
   fields.copyAll.textContent = "Copied";
@@ -168,6 +263,14 @@ document.querySelector("#permitForm").addEventListener("submit", (event) => {
 
 fields.copyAll.addEventListener("click", copyAll);
 fields.emailQuote.addEventListener("click", emailQuote);
+fields.activatePack?.addEventListener("click", () => verifyPaidPackCode(fields.proCode.value));
+fields.downloadPack?.addEventListener("click", downloadPaidPack);
 document.querySelectorAll(".doc-check").forEach((node) => node.addEventListener("change", generate));
+
+const savedCode = localStorage.getItem(LICENSE_STORAGE_KEY);
+if (savedCode) {
+  fields.proCode.value = savedCode;
+  verifyPaidPackCode(savedCode, { quiet: true });
+}
 
 generate();

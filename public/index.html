@@ -57,12 +57,41 @@
           <p>Final drawings, structural calculations, electrical design, and PE stamps must be handled by qualified local professionals.</p>
         </div>
         <div class="notice-actions">
-          <a class="primary" id="paymentLink" href="https://www.paypal.com/ncp/payment/SSX7PVFVEGTHL">
+          <a class="primary" id="paymentLink" href="https://namebatch.pagecheckai.com/api/checkout?v=solarpermit-20260731&amp;product=solarpermitprepai">
             Pay $49 review
           </a>
+          <a class="secondary" href="https://www.paypal.com/ncp/payment/SSX7PVFVEGTHL">PayPal fallback</a>
           <a class="secondary" href="mailto:support@pagecheckai.com?subject=SolarPermitPrepAI%20permit%20packet%20review">
             Request quote
           </a>
+        </div>
+      </section>
+
+      <section class="notice-strip activation-strip" aria-label="Permit packet prep activation" data-payment-state="live">
+        <div>
+          <p class="eyebrow">Browser-generated paid handoff</p>
+          <h2>Activate the $49 review pack and download a deeper permit packet handoff.</h2>
+          <p>
+            The paid pack adds document ownership, field-verification, professional-review, and submission-gate
+            checklists. Activation sends only the code and product key; project notes stay in this browser.
+          </p>
+        </div>
+        <div class="activation-panel">
+          <label for="proCode">
+            Activation code
+            <input id="proCode" type="text" autocomplete="off" placeholder="SP-XXXX-XXXX-XXXX-XXXX" />
+          </label>
+          <div class="button-row">
+            <button id="activatePack" type="button">Activate</button>
+            <button id="downloadPack" type="button" disabled>Download paid handoff</button>
+          </div>
+          <p id="proStatus" class="activation-status" aria-live="polite">Enter a valid code to unlock the paid handoff.</p>
+          <p class="fallback-note">
+            Need a code?
+            <a href="https://namebatch.pagecheckai.com/api/checkout?v=solarpermit-20260731&amp;product=solarpermitprepai">Buy for $49</a>.
+            If checkout is unavailable, use the
+            <a href="https://www.paypal.com/ncp/payment/SSX7PVFVEGTHL">PayPal fallback</a>.
+          </p>
         </div>
       </section>
 

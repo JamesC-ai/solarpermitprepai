@@ -7,6 +7,8 @@ test("renders SolarPermitPrepAI precheck", async () => {
   assert.match(html, /SolarPermitPrepAI/);
   assert.match(html, /Generate permit precheck/);
   assert.match(html, /Email quote request/);
+  assert.match(html, /namebatch\.pagecheckai\.com\/api\/checkout\?v=solarpermit-20260731&amp;product=solarpermitprepai/);
+  assert.match(html, /id="downloadPack"[^>]*disabled/);
   assert.match(html, /https:\/\/www\.paypal\.com\/ncp\/payment\/SSX7PVFVEGTHL/);
   assert.match(html, /not an engineering stamp/);
   assert.match(html, /Permit prep guides/);
@@ -36,9 +38,13 @@ test("ships browser-local permit generator", async () => {
   const script = await readFile(new URL("../dist/app.js", import.meta.url), "utf8");
   assert.match(script, /function generate/);
   assert.match(script, /SolarPermitPrepAI packet/);
-  assert.match(script, /SSX7PVFVEGTHL/);
+  assert.match(script, /function paidPacketText/);
+  assert.match(script, /Document and review tracker/);
+  assert.match(script, /solarpermitprepai-permit-packet-handoff\.txt/);
+  assert.match(script, /https:\/\/namebatch\.pagecheckai\.com\/api\/licenses\/verify/);
+  assert.match(script, /JSON\.stringify\(\{ code, product: "solarpermitprepai" \}\)/);
+  assert.doesNotMatch(script, /JSON\.stringify\(\{[^}]*projectAddress/i);
   assert.match(script, /not a permit approval/);
-  assert.doesNotMatch(script, /fetch\(/);
 });
 
 test("includes policy support and SEO discovery files", async () => {
@@ -126,7 +132,9 @@ test("includes policy support and SEO discovery files", async () => {
   }
   assert.equal((sitemap.match(/<loc>/g) || []).length, 79);
   assert.match(terms, /not an engineering service/i);
+  assert.match(terms, /does not log into permit portals/i);
   assert.match(support, /SolarPermitPrepAI support/);
+  assert.match(support, /namebatch\.pagecheckai\.com\/api\/checkout\?v=solarpermit-20260731&amp;product=solarpermitprepai/);
   assert.equal(indexNowKey.trim(), "cf398b202197d60941bf17f97fffe12b");
   assert.match(indexNowScript, /api\.indexnow\.org\/indexnow/);
 });
