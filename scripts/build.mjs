@@ -1545,6 +1545,10 @@ for (const page of seoPages) {
           <h2>Quote handoff review</h2>
           <p>Before paying for review, confirm the address, AHJ, utility, project scope, equipment models, attachment list, and open questions. The cleaner the packet, the easier it is for a qualified professional to price and route the next step.</p>
         </article>
+        <article class="panel seo-card">
+          <h2>When the $49 packet prep is worth it</h2>
+          <p>Pay only after the free precheck has an address, AHJ, project scope, equipment notes, first document list, and a qualified reviewer who can make the official decisions. The $49 review is useful for missing-item, document-owner, field-verification, reviewer-question, and quote-handoff structure. Skip payment if you need an engineering design, PE stamp, permit submission, portal login, fee payment, utility or AHJ contact, code interpretation, licensure verification, inspection readiness, construction authorization, safety advice, or guaranteed approval, interconnection, inspection, schedule, quote, payment, ranking, traffic, sales, or revenue.</p>
+        </article>
       </section>
       <section class="seo-grid" aria-label="Frequently asked questions">
         ${faq(page.faq)}
