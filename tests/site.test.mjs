@@ -21,6 +21,8 @@ test("renders SolarPermitPrepAI precheck", async () => {
   assert.match(html, /namebatch\.pagecheckai\.com\/api\/checkout\?v=solarpermit-20260731&amp;product=solarpermitprepai/);
   assert.match(html, /id="downloadPack"[^>]*disabled/);
   assert.match(html, /https:\/\/www\.paypal\.com\/ncp\/payment\/SSX7PVFVEGTHL/);
+  assert.match(html, /After payment, enter the <strong>SP-<\/strong> activation code above/);
+  assert.match(html, /href="\/support\.html">open support<\/a>/);
   assert.match(html, /not an engineering stamp/);
   assert.match(html, /Permit prep guides/);
   assert.match(html, /Panel photos/);
