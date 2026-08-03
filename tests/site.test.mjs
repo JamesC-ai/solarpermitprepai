@@ -18,7 +18,8 @@ test("renders SolarPermitPrepAI precheck", async () => {
   assert.match(html, /Good fit for the \$49 review/);
   assert.match(html, /Keep the official steps separate/);
   assert.match(html, /Skip payment when/);
-  assert.match(html, /namebatch\.pagecheckai\.com\/api\/checkout\?v=solarpermit-20260731&amp;product=solarpermitprepai/);
+  assert.match(html, /namebatch\.pagecheckai\.com\/api\/checkout\?v=solarpermit-20260731&amp;product=solarpermitprepai&amp;utm_source=solarpermitprepai&amp;utm_medium=owned&amp;utm_campaign=conversion&amp;utm_content=home_review/);
+  assert.match(html, /utm_content=activation_review/);
   assert.match(html, /id="downloadPack"[^>]*disabled/);
   assert.match(html, /https:\/\/www\.paypal\.com\/ncp\/payment\/SSX7PVFVEGTHL/);
   assert.match(html, /After payment, enter the <strong>SP-<\/strong> activation code above/);
@@ -147,7 +148,7 @@ test("includes policy support and SEO discovery files", async () => {
   assert.match(terms, /not an engineering service/i);
   assert.match(terms, /does not log into permit portals/i);
   assert.match(support, /SolarPermitPrepAI support/);
-  assert.match(support, /namebatch\.pagecheckai\.com\/api\/checkout\?v=solarpermit-20260731&amp;product=solarpermitprepai/);
+  assert.match(support, /namebatch\.pagecheckai\.com\/api\/checkout\?v=solarpermit-20260731&amp;product=solarpermitprepai&amp;utm_source=solarpermitprepai&amp;utm_medium=owned&amp;utm_campaign=conversion&amp;utm_content=support_review/);
   assert.equal(indexNowKey.trim(), "cf398b202197d60941bf17f97fffe12b");
   assert.match(indexNowScript, /api\.indexnow\.org\/indexnow/);
 });
@@ -177,6 +178,7 @@ test("builds thick permit SEO pages with professional boundaries", async () => {
   assert.match(precheckPage, /When the \$49 packet prep is worth it/);
   assert.match(precheckPage, /Pay only after the free precheck has an address, AHJ/);
   assert.match(precheckPage, /Skip payment if you need an engineering design, PE stamp/);
+  assert.match(precheckPage, /utm_content=seo_residential-solar-permit-precheck_review/);
   assert.match(precheckPage, /licensed contractor, electrician, engineer, or permit professional/);
   assert.match(solarAppPage, /does not determine SolarAPP\+ eligibility/);
   assert.match(solarAppPage, /Project scope unclear enough to need manual screening/);

@@ -1474,6 +1474,15 @@ function escapeHtml(value) {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 }
 
+function checkoutUrlFor(content) {
+  const url = new URL(reviewUrl);
+  url.searchParams.set("utm_source", "solarpermitprepai");
+  url.searchParams.set("utm_medium", "owned");
+  url.searchParams.set("utm_campaign", "conversion");
+  url.searchParams.set("utm_content", content);
+  return escapeHtml(url.toString());
+}
+
 function list(items) {
   return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
 }
@@ -1487,6 +1496,7 @@ await mkdir(distDir, { recursive: true });
 await cp(publicDir, distDir, { recursive: true });
 
 for (const page of seoPages) {
+  const routeSlug = page.slug.replace(/\/$/, "");
   await mkdir(new URL(`${page.slug}/`, distDir), { recursive: true });
   await writeFile(
     new URL(`${page.slug}/index.html`, distDir),
@@ -1507,7 +1517,7 @@ for (const page of seoPages) {
       <p>${page.description}</p>
       <div class="button-row">
         <a class="primary" href="/#precheck">Run precheck</a>
-        <a class="secondary" href="${reviewUrl}">Request $49 review</a>
+        <a class="secondary" href="${checkoutUrlFor(`seo_${routeSlug}_review`)}">Request $49 review</a>
         <a class="secondary" href="${fallbackReviewUrl}">PayPal fallback</a>
       </div>
       <section class="seo-grid" aria-label="SolarPermitPrepAI page details">

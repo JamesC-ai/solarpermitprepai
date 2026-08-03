@@ -36,7 +36,7 @@ const requiredDocs = [
   "utility bill or meter number",
 ];
 
-const paymentUrl = "https://namebatch.pagecheckai.com/api/checkout?v=solarpermit-20260731&product=solarpermitprepai";
+const paymentUrl = "https://namebatch.pagecheckai.com/api/checkout?v=solarpermit-20260731&product=solarpermitprepai&utm_source=solarpermitprepai&utm_medium=owned&utm_campaign=conversion&utm_content=app_quote_email";
 
 function textValue(node, fallback = "") {
   return node.value.trim() || fallback;
