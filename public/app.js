@@ -21,6 +21,7 @@ const fields = {
   state: document.querySelector("#state"),
   summaryOutput: document.querySelector("#summaryOutput"),
   systemSize: document.querySelector("#systemSize"),
+  utility: document.querySelector("#utility"),
 };
 
 const LICENSE_VERIFY_URL = "https://namebatch.pagecheckai.com/api/licenses/verify";
@@ -61,6 +62,7 @@ function values() {
     servicePanel: textValue(fields.servicePanel, "service panel details not provided"),
     state: fields.state.value,
     systemSize: Math.max(Number(fields.systemSize.value) || 0, 0),
+    utility: textValue(fields.utility),
   };
 }
 
@@ -71,6 +73,7 @@ function missingDocs(docs) {
 function riskFlags(v, missing) {
   const flags = [];
   if (!v.contactEmail) flags.push("Contact email is missing.");
+  if (!v.utility) flags.push("Utility provider is missing; interconnection and meter requirements cannot be scoped.");
   if (v.state === "Other") flags.push("State-specific AHJ rules must be checked manually.");
   if (v.battery === "Battery included") flags.push("Battery/ESS details may trigger additional electrical, fire, and equipment requirements.");
   if (v.roofType === "unknown") flags.push("Roof type is unknown; structural and attachment assumptions cannot be checked.");
@@ -88,6 +91,7 @@ function generate() {
   fields.summaryOutput.textContent = `Project: ${v.projectAddress}
 State: ${v.state}
 City / AHJ: ${v.ahj}
+Utility provider: ${v.utility || "not provided"}
 System size: ${v.systemSize} kW
 Modules: ${v.moduleCount} x ${v.moduleModel}
 Inverter / optimizer: ${v.inverterModel}
@@ -104,6 +108,7 @@ Boundary: this precheck organizes intake details only. It is not a permit approv
 
   fields.handoffOutput.textContent = `CAD / reviewer handoff:
 - Confirm AHJ: ${v.ahj}
+- Confirm utility / interconnection provider: ${v.utility || "not provided"}
 - Draft site plan, roof layout, and electrical single-line based on verified field measurements.
 - Confirm module, inverter, racking, disconnect, conductor, breaker, grounding, placard, and utility details.
 - Check roof structure, attachment method, fire pathway, rapid shutdown, and local code adoption.

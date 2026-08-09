@@ -8,6 +8,8 @@ test("renders SolarPermitPrepAI precheck", async () => {
   assert.match(html, /Run free precheck first/);
   assert.match(html, /Check paid fit/);
   assert.match(html, /Generate permit precheck/);
+  assert.match(html, /id="utility"/);
+  assert.match(html, /Utility provider/);
   assert.match(html, /Email quote request/);
   assert.match(html, /Pay \$49 after fit/);
   assert.match(html, /Free packet precheck first/);
@@ -51,6 +53,8 @@ test("renders SolarPermitPrepAI precheck", async () => {
 test("ships browser-local permit generator", async () => {
   const script = await readFile(new URL("../dist/app.js", import.meta.url), "utf8");
   assert.match(script, /function generate/);
+  assert.match(script, /Utility provider is missing; interconnection and meter requirements cannot be scoped/);
+  assert.match(script, /Utility provider: \$\{v\.utility \|\| "not provided"\}/);
   assert.match(script, /SolarPermitPrepAI packet/);
   assert.match(script, /function paidPacketText/);
   assert.match(script, /Document and review tracker/);
