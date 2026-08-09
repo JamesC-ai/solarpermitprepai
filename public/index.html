@@ -107,15 +107,16 @@
         <form class="panel controls" id="permitForm">
           <label>
             Contact email
-            <input id="contactEmail" type="email" value="installer@example.com" />
+            <input id="contactEmail" type="email" autocomplete="email" placeholder="installer@example.com" required />
           </label>
           <label>
             Project address
-            <input id="projectAddress" value="123 Solar Way, Fresno, CA" />
+            <input id="projectAddress" placeholder="Project street address and city" required />
           </label>
           <label>
             State
-            <select id="state">
+            <select id="state" required>
+              <option value="" selected>Select state</option>
               <option value="CA">CA</option>
               <option value="TX">TX</option>
               <option value="FL">FL</option>
@@ -126,62 +127,62 @@
           </label>
           <label>
             City / AHJ
-            <input id="ahj" value="City building department" />
+            <input id="ahj" placeholder="City, county, or permitting authority" required />
           </label>
           <label>
             Utility provider
-            <input id="utility" placeholder="Example: PG&amp;E or local municipal utility" />
+            <input id="utility" placeholder="Example: PG&amp;E or local municipal utility" required />
           </label>
           <label>
             System size
-            <input id="systemSize" type="number" min="0" step="0.1" value="7.6" />
+            <input id="systemSize" type="number" min="0.1" step="0.1" placeholder="7.6" required />
           </label>
           <label>
             Module count
-            <input id="moduleCount" type="number" min="1" value="19" />
+            <input id="moduleCount" type="number" min="1" placeholder="19" required />
           </label>
           <label>
             Module model
-            <input id="moduleModel" value="REC 400W or equivalent" />
+            <input id="moduleModel" placeholder="Manufacturer and exact model" required />
           </label>
           <label>
             Inverter / optimizer
-            <input id="inverterModel" value="Enphase IQ8 microinverters" />
+            <input id="inverterModel" placeholder="Manufacturer and exact model" required />
           </label>
           <label>
             Battery
             <select id="battery">
+              <option value="Unknown" selected>Unknown</option>
               <option value="No battery">No battery</option>
               <option value="Battery included">Battery included</option>
-              <option value="Unknown">Unknown</option>
             </select>
           </label>
           <label>
             Main service panel
-            <input id="servicePanel" value="200A main panel, backfed breaker expected" />
+            <input id="servicePanel" placeholder="Rating, configuration, and verified panel notes" required />
           </label>
           <label>
             Roof type
             <select id="roofType">
+              <option value="unknown" selected>Unknown</option>
               <option value="comp shingle">Comp shingle</option>
               <option value="tile">Tile</option>
               <option value="metal">Metal</option>
               <option value="flat roof">Flat roof</option>
-              <option value="unknown">Unknown</option>
             </select>
           </label>
           <fieldset>
             <legend>Documents already available</legend>
-            <label><input class="doc-check" type="checkbox" value="site plan" checked /> Site plan</label>
+            <label><input class="doc-check" type="checkbox" value="site plan" /> Site plan</label>
             <label><input class="doc-check" type="checkbox" value="roof layout" /> Roof layout</label>
             <label><input class="doc-check" type="checkbox" value="single-line diagram inputs" /> SLD inputs</label>
-            <label><input class="doc-check" type="checkbox" value="module and inverter cut sheets" checked /> Equipment cut sheets</label>
+            <label><input class="doc-check" type="checkbox" value="module and inverter cut sheets" /> Equipment cut sheets</label>
             <label><input class="doc-check" type="checkbox" value="racking data sheet" /> Racking data sheet</label>
             <label><input class="doc-check" type="checkbox" value="utility bill or meter number" /> Utility bill / meter</label>
           </fieldset>
           <label>
             Project notes
-            <textarea id="projectNotes" rows="7">Roof photos are ready. Need to confirm setbacks, fire access pathway, panel schedule, and whether the AHJ accepts SolarAPP+.</textarea>
+            <textarea id="projectNotes" rows="7" placeholder="Add verified project constraints, open questions, and document notes. Do not paste credentials or private utility records."></textarea>
           </label>
           <button class="primary" type="submit">Generate permit precheck</button>
         </form>

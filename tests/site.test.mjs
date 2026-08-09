@@ -65,6 +65,33 @@ test("ships browser-local permit generator", async () => {
   assert.match(script, /not a permit approval/);
 });
 
+test("requires current real project inputs before external handoff", async () => {
+  const html = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
+  const script = await readFile(new URL("../dist/app.js", import.meta.url), "utf8");
+
+  assert.doesNotMatch(
+    html,
+    /value="installer@example\.com"|value="123 Solar Way|value="7\.6"|value="19"|value="REC 400W|value="Enphase IQ8|value="200A main panel"/,
+  );
+  for (const id of [
+    "contactEmail",
+    "projectAddress",
+    "state",
+    "ahj",
+    "utility",
+    "systemSize",
+    "moduleCount",
+    "moduleModel",
+    "inverterModel",
+    "servicePanel",
+  ]) {
+    assert.match(html, new RegExp(`id="${id}"[^>]*required`));
+  }
+  assert.match(script, /function packetText\(\) \{\s+generate\(\);/);
+  assert.match(script, /permitForm\.reportValidity\(\)/);
+  assert.match(script, /Complete the required project fields before downloading the paid handoff/);
+});
+
 test("includes policy support and SEO discovery files", async () => {
   const robots = await readFile(new URL("../dist/robots.txt", import.meta.url), "utf8");
   const sitemap = await readFile(new URL("../dist/sitemap.xml", import.meta.url), "utf8");

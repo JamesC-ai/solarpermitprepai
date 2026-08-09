@@ -11,6 +11,7 @@ const fields = {
   missingOutput: document.querySelector("#missingOutput"),
   moduleCount: document.querySelector("#moduleCount"),
   moduleModel: document.querySelector("#moduleModel"),
+  permitForm: document.querySelector("#permitForm"),
   projectAddress: document.querySelector("#projectAddress"),
   projectNotes: document.querySelector("#projectNotes"),
   proCode: document.querySelector("#proCode"),
@@ -49,17 +50,17 @@ function checkedDocs() {
 
 function values() {
   return {
-    ahj: textValue(fields.ahj, "AHJ not identified"),
+    ahj: textValue(fields.ahj),
     battery: fields.battery.value,
     contactEmail: textValue(fields.contactEmail),
     docs: checkedDocs(),
-    inverterModel: textValue(fields.inverterModel, "inverter model not provided"),
+    inverterModel: textValue(fields.inverterModel),
     moduleCount: Math.max(Number(fields.moduleCount.value) || 0, 0),
-    moduleModel: textValue(fields.moduleModel, "module model not provided"),
-    projectAddress: textValue(fields.projectAddress, "project address not provided"),
+    moduleModel: textValue(fields.moduleModel),
+    projectAddress: textValue(fields.projectAddress),
     projectNotes: textValue(fields.projectNotes),
     roofType: fields.roofType.value,
-    servicePanel: textValue(fields.servicePanel, "service panel details not provided"),
+    servicePanel: textValue(fields.servicePanel),
     state: fields.state.value,
     systemSize: Math.max(Number(fields.systemSize.value) || 0, 0),
     utility: textValue(fields.utility),
@@ -72,9 +73,17 @@ function missingDocs(docs) {
 
 function riskFlags(v, missing) {
   const flags = [];
-  if (!v.contactEmail) flags.push("Contact email is missing.");
+  if (!v.contactEmail || !fields.contactEmail.validity.valid) flags.push("A valid contact email is missing.");
+  if (!v.projectAddress) flags.push("Project address is missing.");
+  if (!v.state) flags.push("Project state is missing.");
+  if (!v.ahj) flags.push("City or permitting authority is missing.");
   if (!v.utility) flags.push("Utility provider is missing; interconnection and meter requirements cannot be scoped.");
+  if (v.systemSize <= 0) flags.push("System size is missing.");
+  if (v.moduleCount <= 0 || !v.moduleModel) flags.push("Module count or model is missing.");
+  if (!v.inverterModel) flags.push("Inverter or optimizer model is missing.");
+  if (!v.servicePanel) flags.push("Main service panel details are missing.");
   if (v.state === "Other") flags.push("State-specific AHJ rules must be checked manually.");
+  if (v.battery === "Unknown") flags.push("Battery scope is unknown; ESS requirements cannot be screened.");
   if (v.battery === "Battery included") flags.push("Battery/ESS details may trigger additional electrical, fire, and equipment requirements.");
   if (v.roofType === "unknown") flags.push("Roof type is unknown; structural and attachment assumptions cannot be checked.");
   if (v.systemSize > 10) flags.push("System is above 10 kW; many expedited residential workflows may not apply.");
@@ -88,16 +97,16 @@ function generate() {
   const flags = riskFlags(v, missing);
   const readiness = flags.length === 0 ? "Ready for a human plan-set quote." : "Needs cleanup before quote or AHJ review.";
 
-  fields.summaryOutput.textContent = `Project: ${v.projectAddress}
-State: ${v.state}
-City / AHJ: ${v.ahj}
+  fields.summaryOutput.textContent = `Project: ${v.projectAddress || "not provided"}
+State: ${v.state || "not selected"}
+City / AHJ: ${v.ahj || "not provided"}
 Utility provider: ${v.utility || "not provided"}
-System size: ${v.systemSize} kW
-Modules: ${v.moduleCount} x ${v.moduleModel}
-Inverter / optimizer: ${v.inverterModel}
+System size: ${v.systemSize || "not provided"} kW
+Modules: ${v.moduleCount || "not provided"} x ${v.moduleModel || "model not provided"}
+Inverter / optimizer: ${v.inverterModel || "not provided"}
 Battery: ${v.battery}
 Roof: ${v.roofType}
-Main service panel: ${v.servicePanel}
+Main service panel: ${v.servicePanel || "not provided"}
 Readiness: ${readiness}
 
 Boundary: this precheck organizes intake details only. It is not a permit approval, engineering design, utility approval, contractor license review, or PE stamp.`;
@@ -107,7 +116,7 @@ Boundary: this precheck organizes intake details only. It is not a permit approv
     : "No core intake documents are marked missing. Confirm AHJ-specific forms, plan sheet format, fire setbacks, labels, and utility interconnection steps.";
 
   fields.handoffOutput.textContent = `CAD / reviewer handoff:
-- Confirm AHJ: ${v.ahj}
+  - Confirm AHJ: ${v.ahj || "not provided"}
 - Confirm utility / interconnection provider: ${v.utility || "not provided"}
 - Draft site plan, roof layout, and electrical single-line based on verified field measurements.
 - Confirm module, inverter, racking, disconnect, conductor, breaker, grounding, placard, and utility details.
@@ -120,7 +129,7 @@ ${flags.length ? flags.map((flag, index) => `${index + 1}. ${flag}`).join("\n") 
 Notes:
 ${v.projectNotes || "No notes provided."}`;
 
-  fields.quoteOutput.textContent = `Subject: SolarPermitPrepAI permit packet review - ${v.projectAddress}
+  fields.quoteOutput.textContent = `Subject: SolarPermitPrepAI permit packet review - ${v.projectAddress || "address not provided"}
 
 Hello,
 
@@ -145,6 +154,7 @@ Contact: ${v.contactEmail || "not provided"}`;
 }
 
 function packetText() {
+  generate();
   return `SolarPermitPrepAI packet
 
 Readiness summary:
@@ -236,6 +246,10 @@ function downloadPaidPack() {
     fields.proCode.focus();
     return;
   }
+  if (!fields.permitForm.reportValidity()) {
+    setPaidPackState(true, "Complete the required project fields before downloading the paid handoff.");
+    return;
+  }
   const blob = new Blob([paidPacketText()], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -256,12 +270,13 @@ async function copyAll() {
 }
 
 function emailQuote() {
+  if (!fields.permitForm.reportValidity()) return;
   const v = values();
-  const subject = `SolarPermitPrepAI permit packet review - ${v.projectAddress}`;
+  const subject = `SolarPermitPrepAI permit packet review - ${v.projectAddress || "address not provided"}`;
   location.href = `mailto:support@pagecheckai.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(packetText())}`;
 }
 
-document.querySelector("#permitForm").addEventListener("submit", (event) => {
+fields.permitForm.addEventListener("submit", (event) => {
   event.preventDefault();
   generate();
 });
