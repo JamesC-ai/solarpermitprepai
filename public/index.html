@@ -58,13 +58,9 @@
           <p>Use the browser-local precheck to see whether the address, AHJ, equipment, and document list are ready for a cleaner qualified handoff.</p>
         </div>
         <div class="notice-actions">
-          <a class="primary" id="paymentLink" href="https://namebatch.pagecheckai.com/api/checkout?v=solarpermit-20260731&amp;product=solarpermitprepai&amp;utm_source=solarpermitprepai&amp;utm_medium=owned&amp;utm_campaign=conversion&amp;utm_content=home_review">
-            Pay $49 after fit
-          </a>
-          <a class="secondary" href="https://www.paypal.com/ncp/payment/SSX7PVFVEGTHL">PayPal fallback</a>
-          <a class="secondary" href="mailto:support@pagecheckai.com?subject=SolarPermitPrepAI%20permit%20packet%20review">
-            Request quote
-          </a>
+          <a class="primary" id="paymentLink" href="#precheck">Complete free precheck first</a>
+          <a class="secondary" id="paymentFallbackLink" href="#precheck">PayPal fallback after fit</a>
+          <a class="secondary" id="quoteRequestLink" href="#precheck">Generate precheck before quote</a>
         </div>
       </section>
 
@@ -96,9 +92,9 @@
           <p id="proStatus" class="activation-status" aria-live="polite">Enter a valid code to unlock the paid handoff.</p>
           <p class="fallback-note">
             After payment, enter the <strong>SP-</strong> activation code above. Need a code?
-            <a href="https://namebatch.pagecheckai.com/api/checkout?v=solarpermit-20260731&amp;product=solarpermitprepai&amp;utm_source=solarpermitprepai&amp;utm_medium=owned&amp;utm_campaign=conversion&amp;utm_content=activation_review">Buy for $49</a>.
-            If checkout is unavailable, use the
-            <a href="https://www.paypal.com/ncp/payment/SSX7PVFVEGTHL">PayPal fallback</a>, then <a href="/support.html">open support</a> with the receipt.
+            <a id="activationPaymentLink" href="#precheck">Generate a ready precheck before buying</a>.
+            If checkout is unavailable after fit, use the
+            <a id="activationFallbackLink" href="#precheck">PayPal fallback</a>, then <a href="/support.html">open support</a> with the receipt.
           </p>
         </div>
       </section>
@@ -182,7 +178,7 @@
           </fieldset>
           <label>
             Project notes
-            <textarea id="projectNotes" rows="7" placeholder="Add verified project constraints, open questions, and document notes. Do not paste credentials or private utility records."></textarea>
+            <textarea id="projectNotes" rows="7" placeholder="Add verified project constraints, open questions, and document notes. Do not paste credentials or private utility records." required></textarea>
           </label>
           <button class="primary" type="submit">Generate permit precheck</button>
         </form>
@@ -194,8 +190,8 @@
               <h2>Permit packet precheck</h2>
             </div>
             <div class="button-row">
-              <button id="copyAll" type="button">Copy</button>
-              <button id="emailQuote" type="button">Email quote request</button>
+              <button id="copyAll" type="button" disabled>Copy</button>
+              <button id="emailQuote" type="button" disabled>Email quote request</button>
             </div>
           </div>
           <article>

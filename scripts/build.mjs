@@ -4,8 +4,6 @@ const root = new URL("../", import.meta.url);
 const publicDir = new URL("public/", root);
 const distDir = new URL("dist/", root);
 const site = "https://solar.pagecheckai.com";
-const reviewUrl = "https://namebatch.pagecheckai.com/api/checkout?v=solarpermit-20260731&product=solarpermitprepai";
-const fallbackReviewUrl = "https://www.paypal.com/ncp/payment/SSX7PVFVEGTHL";
 
 const seoPages = [
   {
@@ -1474,13 +1472,14 @@ function escapeHtml(value) {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 }
 
-function checkoutUrlFor(content) {
-  const url = new URL(reviewUrl);
+function freePrecheckUrlFor(page) {
+  const url = new URL(site);
   url.searchParams.set("utm_source", "solarpermitprepai");
   url.searchParams.set("utm_medium", "owned");
-  url.searchParams.set("utm_campaign", "conversion");
-  url.searchParams.set("utm_content", content);
-  return escapeHtml(url.toString());
+  url.searchParams.set("utm_campaign", "seo");
+  url.searchParams.set("utm_content", `seo_${page.slug}`);
+  url.hash = "precheck";
+  return escapeHtml(url.toString().replace(site, ""));
 }
 
 function list(items) {
@@ -1496,7 +1495,6 @@ await mkdir(distDir, { recursive: true });
 await cp(publicDir, distDir, { recursive: true });
 
 for (const page of seoPages) {
-  const routeSlug = page.slug.replace(/\/$/, "");
   await mkdir(new URL(`${page.slug}/`, distDir), { recursive: true });
   await writeFile(
     new URL(`${page.slug}/index.html`, distDir),
@@ -1516,9 +1514,8 @@ for (const page of seoPages) {
       <h1>${page.title}</h1>
       <p>${page.description}</p>
       <div class="button-row">
-        <a class="primary" href="/#precheck">Run precheck</a>
-        <a class="secondary" href="${checkoutUrlFor(`seo_${routeSlug}_review`)}">Request $49 review</a>
-        <a class="secondary" href="${fallbackReviewUrl}">PayPal fallback</a>
+        <a class="primary" href="${freePrecheckUrlFor(page)}">Run precheck</a>
+        <a class="secondary" href="${freePrecheckUrlFor(page)}">Check paid fit after the precheck</a>
       </div>
       <section class="seo-grid" aria-label="SolarPermitPrepAI page details">
         <article class="panel seo-card">

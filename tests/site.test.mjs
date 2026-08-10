@@ -11,7 +11,7 @@ test("renders SolarPermitPrepAI precheck", async () => {
   assert.match(html, /id="utility"/);
   assert.match(html, /Utility provider/);
   assert.match(html, /Email quote request/);
-  assert.match(html, /Pay \$49 after fit/);
+  assert.match(html, /Complete free precheck first/);
   assert.match(html, /Free packet precheck first/);
   assert.match(html, /\$49 only after quote-fit/);
   assert.match(html, /No portal login or upload by default/);
@@ -20,10 +20,12 @@ test("renders SolarPermitPrepAI precheck", async () => {
   assert.match(html, /Good fit for the \$49 review/);
   assert.match(html, /Keep the official steps separate/);
   assert.match(html, /Skip payment when/);
-  assert.match(html, /namebatch\.pagecheckai\.com\/api\/checkout\?v=solarpermit-20260731&amp;product=solarpermitprepai&amp;utm_source=solarpermitprepai&amp;utm_medium=owned&amp;utm_campaign=conversion&amp;utm_content=home_review/);
-  assert.match(html, /utm_content=activation_review/);
+  assert.equal((html.match(/href="#precheck"/g) || []).length >= 6, true);
+  assert.doesNotMatch(html, /href="https:\/\/namebatch\.pagecheckai\.com\/api\/checkout/);
+  assert.doesNotMatch(html, /href="https:\/\/www\.paypal\.com\/ncp\/payment/);
   assert.match(html, /id="downloadPack"[^>]*disabled/);
-  assert.match(html, /https:\/\/www\.paypal\.com\/ncp\/payment\/SSX7PVFVEGTHL/);
+  assert.match(html, /id="copyAll"[^>]*disabled/);
+  assert.match(html, /id="emailQuote"[^>]*disabled/);
   assert.match(html, /After payment, enter the <strong>SP-<\/strong> activation code above/);
   assert.match(html, /href="\/support\.html">open support<\/a>/);
   assert.match(html, /not an engineering stamp/);
@@ -63,6 +65,11 @@ test("ships browser-local permit generator", async () => {
   assert.match(script, /JSON\.stringify\(\{ code, product: "solarpermitprepai" \}\)/);
   assert.doesNotMatch(script, /JSON\.stringify\(\{[^}]*projectAddress/i);
   assert.match(script, /not a permit approval/);
+  assert.match(script, /precheckGenerated/);
+  assert.match(script, /precheckQualified/);
+  assert.match(script, /permitForm\.addEventListener\("input", invalidatePrecheck\)/);
+  assert.match(script, /paidPackActive && precheckQualified/);
+  assert.match(script, /clearGenerated\(\);\s+setPurchaseState\(false\);/);
 });
 
 test("requires current real project inputs before external handoff", async () => {
@@ -84,12 +91,16 @@ test("requires current real project inputs before external handoff", async () =>
     "moduleModel",
     "inverterModel",
     "servicePanel",
+    "projectNotes",
   ]) {
     assert.match(html, new RegExp(`id="${id}"[^>]*required`));
   }
   assert.match(script, /function packetText\(\) \{\s+generate\(\);/);
   assert.match(script, /permitForm\.reportValidity\(\)/);
-  assert.match(script, /Complete the required project fields before downloading the paid handoff/);
+  assert.match(script, /at least 2 available core documents/);
+  assert.match(script, /at least 80 characters of verified constraints and open questions/);
+  assert.match(script, /Generate a current ready precheck before downloading the paid handoff/);
+  assert.doesNotMatch(script, /\ngenerate\(\);\s*$/);
 });
 
 test("includes policy support and SEO discovery files", async () => {
@@ -179,7 +190,10 @@ test("includes policy support and SEO discovery files", async () => {
   assert.match(terms, /not an engineering service/i);
   assert.match(terms, /does not log into permit portals/i);
   assert.match(support, /SolarPermitPrepAI support/);
-  assert.match(support, /namebatch\.pagecheckai\.com\/api\/checkout\?v=solarpermit-20260731&amp;product=solarpermitprepai&amp;utm_source=solarpermitprepai&amp;utm_medium=owned&amp;utm_campaign=conversion&amp;utm_content=support_review/);
+  assert.match(support, /utm_content=support_paid_fit#precheck/);
+  assert.match(support, /Generate a ready precheck before payment/);
+  assert.doesNotMatch(support, /namebatch\.pagecheckai\.com\/api\/checkout/);
+  assert.doesNotMatch(support, /paypal\.com\/ncp\/payment/);
   assert.equal(indexNowKey.trim(), "cf398b202197d60941bf17f97fffe12b");
   assert.match(indexNowScript, /api\.indexnow\.org\/indexnow/);
 });
@@ -196,7 +210,7 @@ test("builds rejection, HOA, portal, and inspection pages with boundaries", asyn
   assert.match(portalPage, /does not log into permit portals, pay fees, sign forms, or submit applications/i);
   assert.match(portalPage, /Keep portal credentials out of generated notes/i);
   assert.match(inspectionPage, /does not determine inspection readiness or guarantee inspection approval/i);
-  assert.match(inspectionPage, /https:\/\/www\.paypal\.com\/ncp\/payment\/SSX7PVFVEGTHL/);
+  assert.match(inspectionPage, /Check paid fit after the precheck/);
 });
 
 test("builds thick permit SEO pages with professional boundaries", async () => {
@@ -209,10 +223,29 @@ test("builds thick permit SEO pages with professional boundaries", async () => {
   assert.match(precheckPage, /When the \$49 packet prep is worth it/);
   assert.match(precheckPage, /Pay only after the free precheck has an address, AHJ/);
   assert.match(precheckPage, /Skip payment if you need an engineering design, PE stamp/);
-  assert.match(precheckPage, /utm_content=seo_residential-solar-permit-precheck_review/);
+  assert.match(precheckPage, /utm_content=seo_residential-solar-permit-precheck#precheck/);
+  assert.match(precheckPage, /Check paid fit after the precheck/);
+  assert.doesNotMatch(precheckPage, /namebatch\.pagecheckai\.com\/api\/checkout/);
+  assert.doesNotMatch(precheckPage, /paypal\.com\/ncp\/payment/);
   assert.match(precheckPage, /licensed contractor, electrician, engineer, or permit professional/);
   assert.match(solarAppPage, /does not determine SolarAPP\+ eligibility/);
   assert.match(solarAppPage, /Project scope unclear enough to need manual screening/);
+});
+
+test("routes all 75 SEO pages through the attributed free precheck", async () => {
+  const sitemap = await readFile(new URL("../dist/sitemap.xml", import.meta.url), "utf8");
+  const slugs = [...sitemap.matchAll(/<loc>https:\/\/solar\.pagecheckai\.com\/([^<]+)<\/loc>/g)]
+    .map((match) => match[1])
+    .filter((slug) => !slug.endsWith(".html") && !["privacy", "support", "terms"].includes(slug));
+
+  assert.equal(slugs.length, 75);
+  for (const slug of slugs) {
+    const html = await readFile(new URL(`../dist/${slug}/index.html`, import.meta.url), "utf8");
+    assert.match(html, /Check paid fit after the precheck/);
+    assert.match(html, new RegExp(`utm_content=seo_${slug}#precheck`));
+    assert.doesNotMatch(html, /namebatch\.pagecheckai\.com\/api\/checkout/);
+    assert.doesNotMatch(html, /paypal\.com\/ncp\/payment/);
+  }
 });
 
 test("builds new solar intake SEO pages with boundaries", async () => {
@@ -235,7 +268,7 @@ test("builds application, structural, electrical, and revision handoff pages saf
   assert.match(structuralPage, /does not calculate loads, verify spans, design attachments, or provide structural approval/i);
   assert.match(loadPage, /does not perform load calculations, service sizing, breaker sizing, conductor sizing, or compliance review/i);
   assert.match(correctionPage, /does not interpret code or decide the technical response/i);
-  assert.match(correctionPage, /https:\/\/www\.paypal\.com\/ncp\/payment\/SSX7PVFVEGTHL/);
+  assert.match(correctionPage, /Check paid fit after the precheck/);
 });
 
 test("builds equipment, site, utility, and lifecycle pages with boundaries", async () => {
@@ -256,7 +289,7 @@ test("builds equipment, site, utility, and lifecycle pages with boundaries", asy
   assert.match(renewalPage, /does not interpret AHJ renewal rules, extend permits/i);
   assert.match(fieldChangePage, /does not validate as-built accuracy, approve construction changes/i);
   for (const page of [batteryPage, inverterPage, groundMountPage, roofPage, utilityPage, quotePage, renewalPage, fieldChangePage]) {
-    assert.match(page, /https:\/\/www\.paypal\.com\/ncp\/payment\/SSX7PVFVEGTHL/);
+    assert.match(page, /Check paid fit after the precheck/);
     assert.match(page, /Professional review boundary/);
   }
 });

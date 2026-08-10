@@ -1,5 +1,7 @@
 const fields = {
   ahj: document.querySelector("#ahj"),
+  activationFallbackLink: document.querySelector("#activationFallbackLink"),
+  activationPaymentLink: document.querySelector("#activationPaymentLink"),
   activatePack: document.querySelector("#activatePack"),
   battery: document.querySelector("#battery"),
   contactEmail: document.querySelector("#contactEmail"),
@@ -12,11 +14,14 @@ const fields = {
   moduleCount: document.querySelector("#moduleCount"),
   moduleModel: document.querySelector("#moduleModel"),
   permitForm: document.querySelector("#permitForm"),
+  paymentFallbackLink: document.querySelector("#paymentFallbackLink"),
+  paymentLink: document.querySelector("#paymentLink"),
   projectAddress: document.querySelector("#projectAddress"),
   projectNotes: document.querySelector("#projectNotes"),
   proCode: document.querySelector("#proCode"),
   proStatus: document.querySelector("#proStatus"),
   quoteOutput: document.querySelector("#quoteOutput"),
+  quoteRequestLink: document.querySelector("#quoteRequestLink"),
   roofType: document.querySelector("#roofType"),
   servicePanel: document.querySelector("#servicePanel"),
   state: document.querySelector("#state"),
@@ -28,6 +33,8 @@ const fields = {
 const LICENSE_VERIFY_URL = "https://namebatch.pagecheckai.com/api/licenses/verify";
 const LICENSE_STORAGE_KEY = "solarpermitprepai.packet-prep-code";
 let paidPackActive = false;
+let precheckGenerated = false;
+let precheckQualified = false;
 
 const requiredDocs = [
   "site plan",
@@ -38,7 +45,10 @@ const requiredDocs = [
   "utility bill or meter number",
 ];
 
-const paymentUrl = "https://namebatch.pagecheckai.com/api/checkout?v=solarpermit-20260731&product=solarpermitprepai&utm_source=solarpermitprepai&utm_medium=owned&utm_campaign=conversion&utm_content=app_quote_email";
+const paymentBaseLinks = {
+  checkout: "https://namebatch.pagecheckai.com/api/checkout?v=solarpermit-20260731&product=solarpermitprepai",
+  fallback: "https://www.paypal.com/ncp/payment/SSX7PVFVEGTHL",
+};
 
 function textValue(node, fallback = "") {
   return node.value.trim() || fallback;
@@ -67,8 +77,40 @@ function values() {
   };
 }
 
+function checkoutHref(content) {
+  const url = new URL(paymentBaseLinks.checkout);
+  const inbound = new URLSearchParams(location.search);
+  url.searchParams.set("utm_source", "solarpermitprepai");
+  url.searchParams.set("utm_medium", "owned");
+  url.searchParams.set("utm_campaign", "conversion");
+  url.searchParams.set("utm_content", content);
+  for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content"]) {
+    const value = inbound.get(key)?.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, "").slice(0, 80);
+    if (value) url.searchParams.set(key, value);
+  }
+  return url.toString();
+}
+
 function missingDocs(docs) {
   return requiredDocs.filter((doc) => !docs.includes(doc));
+}
+
+function qualificationIssues(v = values()) {
+  const issues = [];
+  if (!v.contactEmail || !fields.contactEmail.validity.valid) issues.push("a valid contact email");
+  if (!v.projectAddress) issues.push("the current project address");
+  if (!v.state) issues.push("the project state");
+  if (!v.ahj) issues.push("the city or AHJ");
+  if (!v.utility) issues.push("the utility provider");
+  if (v.systemSize <= 0) issues.push("the system size");
+  if (v.moduleCount <= 0 || !v.moduleModel) issues.push("the module count and exact model");
+  if (!v.inverterModel) issues.push("the inverter or optimizer model");
+  if (!v.servicePanel) issues.push("verified service-panel notes");
+  if (v.battery === "Unknown") issues.push("a confirmed battery scope");
+  if (v.roofType === "unknown") issues.push("a confirmed roof type");
+  if (v.docs.length < 2) issues.push("at least 2 available core documents");
+  if (v.projectNotes.length < 80) issues.push("at least 80 characters of verified constraints and open questions");
+  return issues;
 }
 
 function riskFlags(v, missing) {
@@ -95,7 +137,8 @@ function generate() {
   const v = values();
   const missing = missingDocs(v.docs);
   const flags = riskFlags(v, missing);
-  const readiness = flags.length === 0 ? "Ready for a human plan-set quote." : "Needs cleanup before quote or AHJ review.";
+  const issues = qualificationIssues(v);
+  const readiness = issues.length === 0 ? "Ready for a human plan-set quote." : "Needs current intake details before quote review.";
 
   fields.summaryOutput.textContent = `Project: ${v.projectAddress || "not provided"}
 State: ${v.state || "not selected"}
@@ -147,10 +190,50 @@ Requested scope:
 - Intake cleanup and quote for plan-set drafting coordination.
 - Do not treat this request as approval-ready engineering work until a qualified reviewer confirms AHJ, utility, structural, and electrical requirements.
 
-Payment link:
-${paymentUrl}
+Payment:
+${issues.length ? "Complete the current precheck before payment is available." : checkoutHref("app_quote_email")}
 
 Contact: ${v.contactEmail || "not provided"}`;
+  return issues;
+}
+
+function syncDownloadButton() {
+  fields.downloadPack.disabled = !(paidPackActive && precheckQualified);
+}
+
+function setPurchaseState(qualified) {
+  precheckQualified = qualified;
+  fields.paymentLink.href = qualified ? checkoutHref("home_review") : "#precheck";
+  fields.paymentFallbackLink.href = qualified ? paymentBaseLinks.fallback : "#precheck";
+  fields.activationPaymentLink.href = qualified ? checkoutHref("activation_review") : "#precheck";
+  fields.activationFallbackLink.href = qualified ? paymentBaseLinks.fallback : "#precheck";
+  fields.quoteRequestLink.href = qualified
+    ? "mailto:support@pagecheckai.com?subject=SolarPermitPrepAI%20permit%20packet%20review"
+    : "#precheck";
+  fields.paymentLink.textContent = qualified ? "Pay $49 for this current precheck" : "Complete free precheck first";
+  fields.quoteRequestLink.textContent = qualified ? "Request quote with current precheck" : "Generate precheck before quote";
+  fields.activationPaymentLink.textContent = qualified ? "Buy for $49 after fit" : "Generate a ready precheck before buying";
+  fields.copyAll.disabled = !qualified;
+  fields.emailQuote.disabled = !qualified;
+  syncDownloadButton();
+  if (paidPackActive) {
+    fields.proStatus.textContent = qualified
+      ? "Paid permit packet handoff ready for this current precheck."
+      : "Activation verified. Generate a current ready precheck before downloading.";
+  }
+}
+
+function clearGenerated(message = "Complete the current project details, then generate a permit precheck.") {
+  fields.summaryOutput.textContent = message;
+  fields.missingOutput.textContent = "No current missing-item list yet.";
+  fields.handoffOutput.textContent = "No current CAD or reviewer handoff yet.";
+  fields.quoteOutput.textContent = "No current quote email yet.";
+}
+
+function invalidatePrecheck() {
+  precheckGenerated = false;
+  setPurchaseState(false);
+  clearGenerated("Project inputs changed. Generate the current precheck again before copying, emailing, paying, or downloading.");
 }
 
 function packetText() {
@@ -204,8 +287,8 @@ SolarPermitPrepAI organizes intake and quote-prep notes. It does not log into pe
 
 function setPaidPackState(active, message) {
   paidPackActive = active;
-  fields.downloadPack.disabled = !active;
   fields.proStatus.textContent = message;
+  syncDownloadButton();
 }
 
 async function verifyPaidPackCode(rawCode, { quiet = false } = {}) {
@@ -230,7 +313,12 @@ async function verifyPaidPackCode(rawCode, { quiet = false } = {}) {
     }
     localStorage.setItem(LICENSE_STORAGE_KEY, code);
     fields.proCode.value = code;
-    setPaidPackState(true, "Paid permit packet handoff unlocked on this browser.");
+    setPaidPackState(
+      true,
+      precheckQualified
+        ? "Paid permit packet handoff ready for this current precheck."
+        : "Activation verified. Generate a current ready precheck before downloading.",
+    );
     return true;
   } catch {
     setPaidPackState(false, "Activation is temporarily unavailable. Your project notes remain on this device.");
@@ -246,8 +334,9 @@ function downloadPaidPack() {
     fields.proCode.focus();
     return;
   }
-  if (!fields.permitForm.reportValidity()) {
-    setPaidPackState(true, "Complete the required project fields before downloading the paid handoff.");
+  if (!precheckGenerated || !precheckQualified || !fields.permitForm.reportValidity()) {
+    setPaidPackState(true, "Generate a current ready precheck before downloading the paid handoff.");
+    fields.permitForm.scrollIntoView({ behavior: "smooth", block: "start" });
     return;
   }
   const blob = new Blob([paidPacketText()], { type: "text/plain;charset=utf-8" });
@@ -262,6 +351,7 @@ function downloadPaidPack() {
 }
 
 async function copyAll() {
+  if (!precheckGenerated || !precheckQualified) return;
   await navigator.clipboard.writeText(packetText());
   fields.copyAll.textContent = "Copied";
   setTimeout(() => {
@@ -270,7 +360,7 @@ async function copyAll() {
 }
 
 function emailQuote() {
-  if (!fields.permitForm.reportValidity()) return;
+  if (!precheckGenerated || !precheckQualified || !fields.permitForm.reportValidity()) return;
   const v = values();
   const subject = `SolarPermitPrepAI permit packet review - ${v.projectAddress || "address not provided"}`;
   location.href = `mailto:support@pagecheckai.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(packetText())}`;
@@ -278,14 +368,17 @@ function emailQuote() {
 
 fields.permitForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  generate();
+  const issues = generate();
+  precheckGenerated = true;
+  setPurchaseState(issues.length === 0);
 });
+fields.permitForm.addEventListener("input", invalidatePrecheck);
+fields.permitForm.addEventListener("change", invalidatePrecheck);
 
 fields.copyAll.addEventListener("click", copyAll);
 fields.emailQuote.addEventListener("click", emailQuote);
 fields.activatePack?.addEventListener("click", () => verifyPaidPackCode(fields.proCode.value));
 fields.downloadPack?.addEventListener("click", downloadPaidPack);
-document.querySelectorAll(".doc-check").forEach((node) => node.addEventListener("change", generate));
 
 const savedCode = localStorage.getItem(LICENSE_STORAGE_KEY);
 if (savedCode) {
@@ -293,4 +386,5 @@ if (savedCode) {
   verifyPaidPackCode(savedCode, { quiet: true });
 }
 
-generate();
+clearGenerated();
+setPurchaseState(false);
