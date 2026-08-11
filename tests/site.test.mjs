@@ -69,6 +69,10 @@ test("ships browser-local permit generator", async () => {
   assert.match(script, /precheckQualified/);
   assert.match(script, /permitForm\.addEventListener\("input", invalidatePrecheck\)/);
   assert.match(script, /paidPackActive && precheckQualified/);
+  assert.match(script, /window\.setTimeout\(\(\) => URL\.revokeObjectURL\(url\), 1000\)/);
+  assert.match(script, /Paid handoff download started\. Wait for your browser to confirm the file\./);
+  assert.match(script, /Your current precheck and activation are still available; try again\./);
+  assert.doesNotMatch(script, /link\.remove\(\);\s*URL\.revokeObjectURL\(url\);/);
   assert.match(script, /clearGenerated\(\);\s+setPurchaseState\(false\);/);
 });
 

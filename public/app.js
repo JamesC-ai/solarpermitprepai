@@ -339,15 +339,20 @@ function downloadPaidPack() {
     fields.permitForm.scrollIntoView({ behavior: "smooth", block: "start" });
     return;
   }
-  const blob = new Blob([paidPacketText()], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "solarpermitprepai-permit-packet-handoff.txt";
-  document.body.append(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+  try {
+    const blob = new Blob([paidPacketText()], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "solarpermitprepai-permit-packet-handoff.txt";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setPaidPackState(true, "Paid handoff download started. Wait for your browser to confirm the file.");
+  } catch {
+    setPaidPackState(true, "Paid handoff download could not start. Your current precheck and activation are still available; try again.");
+  }
 }
 
 async function copyAll() {
