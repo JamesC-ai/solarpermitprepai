@@ -196,6 +196,12 @@ test("includes policy support and SEO discovery files", async () => {
   assert.match(support, /SolarPermitPrepAI support/);
   assert.match(support, /utm_content=support_paid_fit#precheck/);
   assert.match(support, /Generate a ready precheck before payment/);
+  assert.match(support, /Missing activation code or rejected code/);
+  assert.match(support, /Send only the PayPal receipt ID, checkout email/);
+  assert.match(support, /Do not include a project address, owner or customer name, utility bill, permit packet/i);
+  assert.match(support, /de-identified scope summary/);
+  assert.match(support, /Wait for support to confirm whether a private transfer method is appropriate/);
+  assert.doesNotMatch(support, /include the generated packet, project state, AHJ, system size, equipment/i);
   assert.doesNotMatch(support, /namebatch\.pagecheckai\.com\/api\/checkout/);
   assert.doesNotMatch(support, /paypal\.com\/ncp\/payment/);
   assert.equal(indexNowKey.trim(), "cf398b202197d60941bf17f97fffe12b");
