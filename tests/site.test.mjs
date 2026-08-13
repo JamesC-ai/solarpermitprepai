@@ -10,7 +10,7 @@ test("renders SolarPermitPrepAI precheck", async () => {
   assert.match(html, /Generate permit precheck/);
   assert.match(html, /id="utility"/);
   assert.match(html, /Utility provider/);
-  assert.match(html, /Email quote request/);
+  assert.match(html, /Email de-identified fit summary/);
   assert.match(html, /Complete free precheck first/);
   assert.match(html, /Free packet precheck first/);
   assert.match(html, /\$49 only after quote-fit/);
@@ -105,6 +105,25 @@ test("requires current real project inputs before external handoff", async () =>
   assert.match(script, /at least 80 characters of verified constraints and open questions/);
   assert.match(script, /Generate a current ready precheck before downloading the paid handoff/);
   assert.doesNotMatch(script, /\ngenerate\(\);\s*$/);
+});
+
+test("emails only a de-identified paid-fit summary", async () => {
+  const script = await readFile(new URL("../dist/app.js", import.meta.url), "utf8");
+  const start = script.indexOf("function approvedInquiryText()");
+  const end = script.indexOf("function emailQuote()", start);
+  const inquiryFunction = script.slice(start, end);
+
+  assert.notEqual(start, -1);
+  assert.notEqual(end, -1);
+  assert.match(inquiryFunction, /Approximate system size/);
+  assert.match(inquiryFunction, /Available document types/);
+  assert.match(inquiryFunction, /full packet are intentionally not included/);
+  assert.doesNotMatch(
+    inquiryFunction,
+    /v\.(?:projectAddress|utility|moduleModel|inverterModel|servicePanel|projectNotes)|packetText\(/,
+  );
+  assert.match(script, /const subject = "SolarPermitPrepAI paid fit inquiry"/);
+  assert.match(script, /encodeURIComponent\(approvedInquiryText\(\)\)/);
 });
 
 test("includes policy support and SEO discovery files", async () => {

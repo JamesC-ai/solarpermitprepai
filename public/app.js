@@ -364,11 +364,28 @@ async function copyAll() {
   }, 1400);
 }
 
+function approvedInquiryText() {
+  const v = values();
+  const equipmentCategories = ["modules", "inverter or optimizer", "service panel", v.battery]
+    .filter(Boolean)
+    .join(", ");
+  return `SolarPermitPrepAI paid fit inquiry
+
+Contact email: ${v.contactEmail}
+State: ${v.state}
+AHJ: ${v.ahj}
+Approximate system size: ${v.systemSize} kW
+Equipment categories: ${equipmentCategories}
+Available document types: ${v.docs.length ? v.docs.join(", ") : "none selected"}
+Readiness: A current free precheck is ready for professional review.
+
+Privacy note: Street address, parcel number, owner or customer names, account numbers, exact equipment models, service-panel details, project notes, signatures, private links, and the full packet are intentionally not included. Please reply with scope and transfer guidance before requesting any additional approved detail.`;
+}
+
 function emailQuote() {
   if (!precheckGenerated || !precheckQualified || !fields.permitForm.reportValidity()) return;
-  const v = values();
-  const subject = `SolarPermitPrepAI permit packet review - ${v.projectAddress || "address not provided"}`;
-  location.href = `mailto:support@pagecheckai.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(packetText())}`;
+  const subject = "SolarPermitPrepAI paid fit inquiry";
+  location.href = `mailto:support@pagecheckai.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(approvedInquiryText())}`;
 }
 
 fields.permitForm.addEventListener("submit", (event) => {
