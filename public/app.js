@@ -357,11 +357,18 @@ function downloadPaidPack() {
 
 async function copyAll() {
   if (!precheckGenerated || !precheckQualified) return;
-  await navigator.clipboard.writeText(packetText());
-  fields.copyAll.textContent = "Copied";
-  setTimeout(() => {
-    fields.copyAll.textContent = "Copy";
-  }, 1400);
+  fields.copyAll.disabled = true;
+  try {
+    await navigator.clipboard.writeText(packetText());
+    fields.copyAll.textContent = "Copied";
+  } catch {
+    fields.copyAll.textContent = "Copy failed - retry";
+  } finally {
+    window.setTimeout(() => {
+      fields.copyAll.textContent = "Copy";
+      fields.copyAll.disabled = !precheckQualified;
+    }, 1400);
+  }
 }
 
 function approvedInquiryText() {

@@ -76,6 +76,15 @@ test("ships browser-local permit generator", async () => {
   assert.match(script, /clearGenerated\(\);\s+setPurchaseState\(false\);/);
 });
 
+test("keeps a qualified permit precheck retryable when clipboard access fails", async () => {
+  const script = await readFile(new URL("../dist/app.js", import.meta.url), "utf8");
+  assert.match(script, /fields\.copyAll\.disabled = true/);
+  assert.match(script, /await navigator\.clipboard\.writeText\(packetText\(\)\)/);
+  assert.match(script, /Copy failed - retry/);
+  assert.match(script, /fields\.copyAll\.disabled = !precheckQualified/);
+  assert.match(script, /try \{[\s\S]+catch \{[\s\S]+finally \{/);
+});
+
 test("requires current real project inputs before external handoff", async () => {
   const html = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
   const script = await readFile(new URL("../dist/app.js", import.meta.url), "utf8");
